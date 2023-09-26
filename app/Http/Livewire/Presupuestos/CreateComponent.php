@@ -276,11 +276,11 @@ class CreateComponent extends Component
 
     public function add()
     {
-        $this->alumnos[] = ['alumno' => "", 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => "", 'horas' => ""];
+        $this->alumnos[] = ['alumno' => "", 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => 0, 'horas' => 0];
     }
     public function addCurso($key)
     {
-        $this->cursos_multiples[$key][] = ['curso' => "", 'precio' => "", 'horas' => ""];
+        $this->cursos_multiples[$key][] = ['curso' => "", 'precio' => 0, 'horas' => 0];
     }
 
     public function addPrecio($i)
