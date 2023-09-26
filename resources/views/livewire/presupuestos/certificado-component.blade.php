@@ -114,7 +114,7 @@
     <div class="contenedor-imagen">
         <img src="{{ public_path('/assets/backgroundTotal.PNG') }}" alt="Imagen de fondo" class="imagen-fondo">
 
-        {{-- <p class="textoAcreditar">Acreditan en <strong> {{$cursoCelebracion->nombre}} a {{ $cursoFechaCelebracion }} </strong> que</p> --}}
+        {{-- <p class="textoAcreditar">Acreditan en <strong> {{$cursoCelebracion}} a {{ $cursoFechaCelebracion }} </strong> que</p> --}}
 
         {{-- <h1 class="textoNombre">D. {{ $alumno->nombre }} {{ $alumno->apellidos }}</h1> --}}
 

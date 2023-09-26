@@ -112,7 +112,7 @@
     .pagina2 h3 {
         color: #FA3804 !important;
         font-size: 20px;
-      
+
     }
 
     .pagina2 h4 {
@@ -154,7 +154,7 @@
     <div class="contenedor-imagen">
         <img src="{{ public_path('/assets/backgroundTotal.PNG') }}" alt="Imagen de fondo" class="imagen-fondo">
 
-        <p class="textoAcreditar">Acreditan en <strong> {{ $cursoCelebracion->nombre }} a {{ $cursoFechaCelebracion }}
+        <p class="textoAcreditar">Acreditan en <strong> {{ $cursoCelebracion }} a {{ $cursoFechaCelebracion }}
             </strong> que</p>
 
         <h1 class="textoNombre">D. {{ $alumno->nombre }} {{ $alumno->apellidos }}</h1>

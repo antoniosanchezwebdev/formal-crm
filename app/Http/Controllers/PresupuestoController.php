@@ -112,7 +112,7 @@ class PresupuestoController extends Controller
         setlocale(LC_TIME, 'Spanish');
         $presupuestoRecibido = Presupuestos::where('id', $id)->first();
         $rango_fechas = [];
-        foreach($presupuestoRecibido->rangosFecha()->get() as $rangoIndex => $rango){
+        foreach ($presupuestoRecibido->rangosFecha()->get() as $rangoIndex => $rango) {
             if ($rango->fecha_1 == null) {
                 $fecha_1 = "Sin fecha de inicio";
                 $fecha_1Formateada = $fecha_1;
@@ -169,28 +169,28 @@ class PresupuestoController extends Controller
         // Nombre del cliente, si es empresa le da el nombre de la empresa y si es cliente le da el nombre del primer cliente asociado al presupuesto
         if ($presupuestoRecibido->empresa_id > 0 && $presupuestoRecibido->empresa_id != null) {
             $empresa = Empresa::where('id', $presupuestoRecibido->empresa_id)->first();
-            if($empresa->nombre == null){
+            if ($empresa->nombre == null) {
                 $nombreCliente = "Cliente sin nombre definido";
-            }else{
+            } else {
                 $nombreCliente = $empresa->nombre;
             }
-            if($empresa->email == null){
+            if ($empresa->email == null) {
                 $emailCliente = "Cliente sin email definido";
-            }else{
+            } else {
                 $emailCliente = $empresa->email;
             }
-            if($empresa->cif == null){
+            if ($empresa->cif == null) {
                 $cifCliente = "Cliente sin CIF definido";
-            }else{
+            } else {
                 $cifCliente = $empresa->cif;
             }
-            if($empresa->telefono == null){
-            }else{
+            if ($empresa->telefono == null) {
+            } else {
                 $telefonoCliente = $empresa->telefono;
             }
-            if($empresa->direccion == null || $empresa->cod_postal == null || $empresa->localidad == null){
+            if ($empresa->direccion == null || $empresa->cod_postal == null || $empresa->localidad == null) {
                 $telefonoCliente = "Cliente sin dirección definida";
-            }else{
+            } else {
                 $direccionCliente = $empresa->direccion . ", " . $empresa->cod_postal . ", " . $empresa->localidad;
             }
             $emailCliente = $empresa->email;
@@ -199,38 +199,37 @@ class PresupuestoController extends Controller
         } else if ($presupuestoRecibido->empresa_id == 0 || $presupuestoRecibido->empresa_id == null) {
             if (count($presupuestosAlumnoCurso) > 0) {
                 $alumno = Alumno::where('id', $presupuestosAlumnoCurso[0]->alumno_id)->first();
-                if($alumno == null){
+                if ($alumno == null) {
                     $nombreCliente = "Cliente sin nombre definido";
-                $fechaNacCliente = 'n/a';
-                $cifCliente = 'n/a';
-                $telefonoCliente = 'n/a';
-                $direccionCliente = 'n/a';
-                $emailCliente = 'n/a';
-                } else{
+                    $fechaNacCliente = 'n/a';
+                    $cifCliente = 'n/a';
+                    $telefonoCliente = 'n/a';
+                    $direccionCliente = 'n/a';
+                    $emailCliente = 'n/a';
+                } else {
                     $nombreCliente = $alumno->nombre . " " . $alumno->apellidos;
 
-                    if($alumno->email == null){
+                    if ($alumno->email == null) {
                         $emailCliente = "Cliente sin email definido";
-                    }else{
+                    } else {
                         $emailCliente = $alumno->email;
                     }
-                    if($alumno->cif == null){
+                    if ($alumno->cif == null) {
                         $cifCliente = "Cliente sin CIF definido";
-                    }else{
+                    } else {
                         $cifCliente = $alumno->cif;
                     }
-                    if($alumno->telefono == null){
+                    if ($alumno->telefono == null) {
                         $telefonoCliente = "Cliente sin telefono definido";
-                    }else{
+                    } else {
                         $telefonoCliente = $alumno->telefono;
                     }
-                    if($alumno->direccion == null || $alumno->cod_postal == null || $alumno->localidad == null){
+                    if ($alumno->direccion == null || $alumno->cod_postal == null || $alumno->localidad == null) {
                         $direccionCliente = "Cliente sin dirección definida";
-                    }else{
+                    } else {
                         $direccionCliente = $alumno->direccion . ", " . $alumno->cod_postal . ", " . $alumno->localidad;
                     }
                 }
-
             } else {
                 $nombreCliente = "Cliente sin nombre definido";
                 $fechaNacCliente = 'n/a';
@@ -244,54 +243,45 @@ class PresupuestoController extends Controller
             // $nombreCliente = $nombreCliente->nombre;
         }
 
+        $numeroAlumnos = 0;
+        $alumnos_existentes = [];
+        $cursos_existentes = [];
+        $alumno_curso = [];
         // Del presupuesto recibido, se sacan los datos y se añaden a los arrays que serán impresos.
         foreach ($presupuestosAlumnoCurso as $presup) {
-            $curso = Cursos::where('id', $presup->curso_id)->first();
-            $cursoCelebracion = CursosCelebracion::where('id', $curso->celebracion_id)->first();
+            $curso = Cursos::find($presup->curso_id);
+            $alumno = Alumno::find($presup->alumno_id);
 
-
-            $alumnosDeCurso = Alumno::where('id', $presup->alumno_id)->first();
-            if (isset($alumnosDeCurso)) {
-                array_push($alumnosNombre, $alumnosDeCurso->nombre);
-            } else {
-                array_push($alumnosNombre, " ");
-            }
-
-            array_push($cursos, $curso);
-            array_push($cursosNombre, $curso->nombre);
-            if(isset($cursoCelebracion->nombre)){
-                array_push($cursosCelebracion, $cursoCelebracion->nombre);
-            }
-            $numeroAlumnos++;
-        }
-
-        // Borra los cursos repetidos
-        // $cursos = array_unique($cursos);
-        $cursosCelebracion = array_unique($cursosCelebracion);
-        $cursos = array_unique($cursos);
-
-
-        foreach ($cursos as $curso) {
-
-            $denominacion = CursosDenominacion::where("id", $curso->denominacion_id)->first();
-            $denominacion = is_null($denominacion) ? " " : $denominacion->nombre;
-            $denominaciones[$curso->id] = $denominacion;
-            $descripcion = "$curso->nombre";
-            $alumnoCurso[$curso->id] = PresupuestosAlumnoCurso::whereRaw("presupuesto_id = $id and curso_id = $curso->id")->pluck("alumno_id")->toArray();
-            $currentAlumnos = $alumnoCurso[$curso->id];
-            foreach ($alumnoCurso as $key => $alumno) {
-                // dd($alumnoCurso);
-                if ($alumno == 0) {
-                    $alumnos[$curso->id][$key] = 0;
+            if (!isset($cursos[$curso->id])) {
+                if (CursosDenominacion::find($curso->denominacion_id) == null) {
+                    $cursos[$curso->id] = [
+                        'nombre_curso' => $curso->nombre,
+                        'horas_curso' => $curso->horas,
+                        'precio_curso' => $curso->precio,
+                        'denominacion_curso' => 'Sin denominación',
+                        'alumnos' => []
+                    ];
                 } else {
-                    $alumnos[$curso->id][$key] = Alumno::where("id", $alumno)->first();
+                    $cursos[$curso->id] = [
+                        'nombre_curso' => $curso->nombre,
+                        'horas_curso' => $curso->horas,
+                        'precio_curso' => $curso->precio,
+                        'denominacion_curso' => CursosDenominacion::find($curso->denominacion_id)->nombre,
+                        'alumnos' => []
+                    ];
                 }
             }
 
-            $totalPrecioCurso[$curso->id] = count($alumnos[$curso->id]) * $curso->precio;
-            $xd = $alumnoCurso[$curso->id];
-            $descripcionCurso[$curso->id] = $descripcion;
+            $cursos[$curso->id]['alumnos'][] = $alumno->nombre . " " . $alumno->apellidos;
+            if (!isset($alumnos_existentes[$alumno->id])) {
+                $alumnos_existentes[$alumno->id] = 1;
+                $numeroAlumnos++;
+            } else {
+            }
         }
+
+
+        // Borra los cursos repetidos
 
 
 
@@ -338,7 +328,11 @@ class PresupuestoController extends Controller
         // $presupuesto = Presupuestos::where('id', $factura->id_presupuesto)->first();
         $alumno = Alumno::where('id', $alumno_id)->first();
         $curso = Cursos::where('id', $curso_id)->first();
-        $cursoCelebracion = CursosCelebracion::where('id', $curso->celebracion_id)->first();
+        if(CursosCelebracion::where('id', $curso->celebracion_id)->first() != null){
+            $cursoCelebracion = CursosCelebracion::where('id', $curso->celebracion_id)->first()->nombre;
+        }else{
+            $cursoCelebracion = 'Sin celebración';
+        }
         $id_monitor = $presupuesto->monitor_id;
         $monitor = Monitor::where('id', $id_monitor)->first();
         $firmaMonitor = $monitor->firma ?? " ";
@@ -350,14 +344,21 @@ class PresupuestoController extends Controller
 
 
         // Fecha del final del curso
-        $date = Carbon::createFromFormat('d/m/Y', $presupuesto->fecha_fin);
-        $diaMes = $date->day;
-        $nombreMes = ucfirst($date->monthName);
-        $numeroMes = $date->month;
-        $anioMes = $date->year;
-        $cursoFechaCelebracion = $diaMes . " de " . $nombreMes . " de " . $anioMes;
+        if($presupuesto->rangosFecha()->count() > 0){
+            $date = Carbon::createFromFormat('Y-m-d', $presupuesto->rangosFecha()->get()->last()->fecha_2);
+            $diaMes = $date->day;
+            $nombreMes = ucfirst($date->monthName);
+            $numeroMes = $date->month;
+            $anioMes = $date->year;
+            $cursoFechaCelebracion = $diaMes . " de " . $nombreMes . " de " . $anioMes;
 
-        $cursoFechaCelebracionConBarras = $diaMes . "/" . $numeroMes . "/" . $anioMes;
+            $cursoFechaCelebracionConBarras = $diaMes . "/" . $numeroMes . "/" . $anioMes;
+        }else{
+            $cursoFechaCelebracion = 'Sin fecha';
+            $cursoFechaCelebracionConBarras = 'Sin fecha';
+
+        }
+
 
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF

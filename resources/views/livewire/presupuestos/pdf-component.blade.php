@@ -233,9 +233,6 @@
             <thead>
                 <tr>
                     <th scope="col">
-                        <p>REF</p>
-                    </th>
-                    <th scope="col">
                         <p>ITEM</p>
                     </th>
                     <th scope="col">
@@ -256,68 +253,38 @@
                 </tr>
             </thead>
             <tbody>
-
-                @foreach ($cursos as $index => $curso)
+                @foreach ($cursos as $curso)
                 <tr width="100%">
-                    <td class="number" width="5%">{{ $curso->id }}</td>
-                    <td width="20%">{{ $denominaciones[$curso->id] }}</td>
+                    <td width="20%">{{ $curso['denominacion_curso'] }}</td>
                     <td width="40%">
-                        <b>Curso:</b> {{ $descripcionCurso[$curso->id] }}<br>
+                        <b>Curso:</b> {{ $curso['nombre_curso'] }}<br>
                         <b>Alumnos:</b>
                         <ul>
-
-                            @php
-                            $alumnosUnicos = array_unique($alumnos[$curso->id], SORT_REGULAR);
-                            $conteos = [];
-
-                            foreach ($alumnos[$curso->id] as $alumno) {
-                            if($alumno == null){
-
-                            }else{
-                            $key = $alumno->nombre . " " . $alumno->apellidos;
-                            if (!isset($conteos[$key])) {
-                            $conteos[$key] = 0;
-                            }
-                            $conteos[$key]++;
-                            }
-                            }
-
-                            @endphp
-                            @foreach($alumnosUnicos as $j => $alumno)
-                            @if($alumno == null)
-                            <li>
-                                @if($alumno == null)@else{{ $alumno->nombre ." ".$alumno->apellidos }}
-                                @if($conteos[$alumno->nombre ." ".$alumno->apellidos] > 1)
-                                ({{ $conteos[$alumno->nombre ." ".$alumno->apellidos] }})
-                            </li>
-                            <br>
-                            @endif
-                            @endif
-                            @endif
+                            @foreach($curso['alumnos'] as $alumno)
+                            <li>{{$alumno}}</li>
                             @endforeach
                         </ul>
                     </td>
-                    <td class="number" width="10%">{{ number_format($curso->precio, 2, ",") }}</td>
-                    <td class="number" width="10%">{{ $curso->duracion }}</td>
-                    <td class="number" width="5%">{{ count($alumnos[$curso->id]) }}</td>
-                    <td class="number" width="10%">{{ number_format($totalPrecioCurso[$curso->id], 2, ",") }}</td>
+                    <td class="number" width="10%">{{ number_format($curso['precio_curso'], 2, ",") }}</td>
+                    <td class="number" width="10%">{{ $curso['horas_curso'] }}</td>
+                    <td class="number" width="5%">{{ count($curso['alumnos']) }}</td>
+                    <td class="number" width="10%">{{ number_format($curso['precio_curso'] * count($curso['alumnos']), 2, ",") }}</td>
 
                 </tr>
                 @endforeach
 
-                {{-- {{ dd($iva) }} --}}
                 @if ($iva === "true")
                 <tr>
-                    <td class="total" colspan="6">TOTAL (Impuestos incluidos)</td>
+                    <td class="total" colspan="5">TOTAL (Impuestos incluidos)</td>
                     <td>
-                        {{ number_format(((array_sum($totalPrecioCurso) * 0.21) + array_sum($totalPrecioCurso)), 2, ",") }}
+                        {{ number_format(((collect($cursos)->sum('precio_curso') * 0.21) + collect($cursos)->sum('precio_curso')), 2, ",") }}
                     </td>
                 </tr>
                 @else
                 <tr>
-                    <td class="total" colspan="6">TOTAL (Impuestos no incluidos)</td>
+                    <td class="total" colspan="5">TOTAL (Impuestos no incluidos)</td>
                     <td>
-                        {{ number_format(array_sum($totalPrecioCurso), 2, ",") }}
+                        {{ number_format(collect($cursos)->sum('precio_curso'), 2, ",") }}
                     </td>
                 </tr>
                 @endif

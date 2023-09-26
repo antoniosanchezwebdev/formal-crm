@@ -54,6 +54,11 @@ class EditComponent extends Component
     public $tipoCliente = 1; // Se usa para generar factura de cliente o particular
     public $stateAlumno = 0; // Para mostrar los inputs del alumno o empresa
     public $stateCurso = 0; // Para mostrar los inputs del alumno o empresa
+    public $cursos_multiples = [];
+    public $cursos_multiplesEliminar = [];
+
+    public $alumnos_select = [];
+    public $cursos_select = [];
 
     public $alumnoSeleccionado;
     public $empresaDeAlumno;
@@ -107,11 +112,21 @@ class EditComponent extends Component
 
         $presupuestosAlumnosCursos = PresupuestosAlumnoCurso::where('presupuesto_id', $this->identificador)->get();
 
-        foreach ($presupuestosAlumnosCursos as $presAlumnoCurso) {
-            $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'curso' => $presAlumnoCurso->curso_id, 'precio' => $presAlumnoCurso->precio, 'existente' => 1, 'id' => $presAlumnoCurso->id];
-            $this->nuevo_alumno[] = false;
-            $this->nuevo_curso[] = false;
+        $alumnos_existentes = [];
+
+        foreach ($presupuestosAlumnosCursos as $presAlumnoCursoIndex => $presAlumnoCurso) {
+            if (!isset($alumnos_existentes[$presAlumnoCurso->alumno_id])) {
+                $alumnos_existentes[$presAlumnoCurso->alumno_id] = $presAlumnoCursoIndex;
+                if ($presupuestosAlumnosCursos->where('presupuesto_id', $presAlumnoCurso->presupuesto_id)->where('alumno_id', $presAlumnoCurso->alumno_id)->count() >= 2) {
+                    $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => true, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
+                } else {
+                    $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => false, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
+                }
+            } else {
+                $this->cursos_multiples[$alumnos_existentes[$presAlumnoCurso->alumno_id]][] = ['curso' => $presAlumnoCurso->curso_id, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
+            }
         }
+
         if ($this->empresa_id > 0) {
             $this->tipoCliente = 2;
         }
@@ -119,16 +134,28 @@ class EditComponent extends Component
         $this->updateTotalPrice();
     }
 
+
     // Recorre los alumnos y añade la información al array inputsAplicados (En el update se usa el precio para calcular el precio total)
     public function render()
     {
-
 
         return view('livewire.presupuestos.edit-component');
     }
     public function addFecha()
     {
         $this->posibles_fechas[] = ['fecha_1' => '', 'fecha_2' => ''];
+    }
+    public function addPrecioMultiple($index1, $index2)
+    {
+
+        if (isset($this->cursos_multiples[$index1][$index2])) {
+            if ($this->cursos_multiples[$index1][$index2]['curso'] > 0 && is_numeric($this->cursos_multiples[$index1][$index2]['curso'])) {
+                $cursoSeleccionadoAdd = Cursos::where('id', $this->cursos_multiples[$index1][$index2]['curso'])->first();
+                $this->cursos_multiples[$index1][$index2]['precio'] = (int) $cursoSeleccionadoAdd->precio;
+                $this->updateTotalPrice();
+            } else {
+            }
+        }
     }
     public function updateAlumno($key)
     {
@@ -150,7 +177,9 @@ class EditComponent extends Component
         $precio = 0;
         if (count($this->alumnos) > 0) {
             foreach ($this->alumnos as $input) {
-                $precio += $input["precio"];
+                if (isset($input["precio"])) {
+                    $precio += $input["precio"];
+                }
             }
         }
 
@@ -207,26 +236,6 @@ class EditComponent extends Component
             $presupuestos->save();
         }
 
-        foreach ($this->alumnos as $alumnoIndex => $alumno) {
-            if (!is_numeric($alumno['alumno'])) {
-                if (isset($alumnos_subidos[$alumno['alumno']])) {
-                    $this->alumnos[$alumnoIndex]['alumno'] = $alumnos_subidos[$alumno['alumno']];
-                } else {
-                    $nuevo_alumno = Alumno::create(['nombre' => $alumno['alumno']]);
-                    $alumnos_subidos[$alumno['alumno']] = $nuevo_alumno->id;
-                    $this->alumnos[$alumnoIndex]['alumno'] = $nuevo_alumno->id;
-                }
-            }
-            if (!is_numeric($alumno['curso'])) {
-                if (isset($cursos_subidos[$alumno['curso']])) {
-                    $this->alumnos[$alumnoIndex]['curso'] = $cursos_subidos[$alumno['curso']];
-                } else {
-                    $nuevo_curso = Cursos::create(['nombre' => $alumno['curso'], 'precio' => $alumno['precio']]);
-                    $cursos_subidos[$alumno['curso']] = $nuevo_curso->id;
-                    $this->alumnos[$alumnoIndex]['curso'] = $nuevo_curso->id;
-                }
-            }
-        }
 
         // Guardar datos validados
         $presupuestosSave = $presupuestos->update([
@@ -247,24 +256,143 @@ class EditComponent extends Component
 
 
 
-        foreach ($this->alumnos as $index => $alumno) {
-            if ($alumno['existente'] == 1) {
-                $alumnoModelo = PresupuestosAlumnoCurso::find($alumno['id']);
-                $alumnoModelo->update([
-                    'alumno_id' => $alumno['alumno'],
-                    'curso_id' => $alumno['curso'],
-                    'precio' => $alumno['precio'],
+        $alumnos_subidos = [];
+        $cursos_subidos = [];
 
-                ]);
+        foreach ($this->alumnos as $alumnoIndex => $alumno) {
+            if (!is_numeric($alumno['alumno'])) {
+                if (isset($alumnos_subidos[$alumno['alumno']])) {
+                    $this->alumnos[$alumnoIndex]['alumno'] = $alumnos_subidos[$alumno['alumno']];
+                } else {
+                    if (isset($alumno['segundo_apellido']) && $alumno['segundo_apellido'] == true) {
+                        $secciones = explode(' ', $alumno['alumno']);
+                        $apellido2 = array_pop($secciones);
+                        $apellido1 = array_pop($secciones);
+                        $nombre = implode(' ', $secciones);
+                        $apellido = $apellido1 . ' ' . $apellido2;
+                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido]);
+                        $alumnos_subidos[$alumno['alumno']] = $nuevo_alumno->id;
+                        $this->alumnos[$alumnoIndex]['alumno'] = $nuevo_alumno->id;
+                    } else {
+                        $secciones = explode(' ', $alumno['alumno']);
+                        $apellido = array_pop($secciones);
+                        $nombre = implode(' ', $secciones);
+                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido]);
+                        $alumnos_subidos[$alumno['alumno']] = $nuevo_alumno->id;
+                        $this->alumnos[$alumnoIndex]['alumno'] = $nuevo_alumno->id;
+                    }
+                }
+            }
+            if (isset($alumno['cursoMultiple']) && $alumno['cursoMultiple'] == true) {
+                if (!is_numeric($alumno['curso'])) {
+                    if (isset($cursos_subidos[$alumno['curso']])) {
+                        $this->alumnos[$alumnoIndex]['curso'] = $cursos_subidos[$alumno['curso']];
+                    } else {
+                        $nuevo_curso = Cursos::create(['nombre' => $alumno['curso'], 'precio' => $alumno['precio'], 'duracion' => $alumno['horas']]);
+                        $cursos_subidos[$alumno['curso']] = $nuevo_curso->id;
+                        $this->alumnos[$alumnoIndex]['curso'] = $nuevo_curso->id;
+                    }
+                }
+                foreach ($this->cursos_multiples[$alumnoIndex] as $cursoIndex => $curso) {
+                    if (!is_numeric($curso['curso'])) {
+                        if (isset($cursos_subidos[$curso['curso']])) {
+                            $this->cursos_multiples[$alumnoIndex][$cursoIndex]['curso'] = $cursos_subidos[$curso['curso']];
+                        } else {
+                            $nuevo_curso = Cursos::create(['nombre' => $curso['curso'], 'precio' => $curso['precio'], 'duracion' => $curso['horas']]);
+                            $cursos_subidos[$curso['curso']] = $nuevo_curso->id;
+                            $this->cursos_multiples[$alumnoIndex][$cursoIndex]['curso'] = $nuevo_curso->id;
+                        }
+                    }
+                }
             } else {
-                $conceptos = PresupuestosAlumnoCurso::create([
-                    'presupuesto_id' => $this->identificador,
-                    'alumno_id' => $alumno['alumno'],
-                    'curso_id' => $alumno['curso'],
-                    'precio' => $alumno['precio'],
-                ]);
+                if (!is_numeric($alumno['curso'])) {
+                    if (isset($cursos_subidos[$alumno['curso']])) {
+                        $this->alumnos[$alumnoIndex]['curso'] = $cursos_subidos[$alumno['curso']];
+                    } else {
+                        $nuevo_curso = Cursos::create(['nombre' => $alumno['curso'], 'precio' => $alumno['precio'], 'duracion' => $alumno['horas']]);
+                        $cursos_subidos[$alumno['curso']] = $nuevo_curso->id;
+                        $this->alumnos[$alumnoIndex]['curso'] = $nuevo_curso->id;
+                    }
+                }
             }
         }
+        foreach ($this->alumnos as $alumnoIndex => $alumno) {
+            if ($alumno['existente'] == 1) {
+                if (isset($alumno['cursoMultiple']) && $alumno['cursoMultiple'] == true) {
+                    $dataConcepto = [
+                        'presupuesto_id' => $presupuestos->id,
+                        'alumno_id' => $alumno['alumno'],
+                        'curso_id' => $alumno['curso'],
+                        'precio' => $alumno['precio'],
+                        'horas' => $alumno['horas'],
+                    ];
+                    $conceptos = PresupuestosAlumnoCurso::firstWhere('id', $alumno['id'])->update($dataConcepto);
+
+                    foreach ($this->cursos_multiples[$alumnoIndex] as $curso) {
+                        if ($curso['existente'] == 1) {
+                            $dataConcepto = [
+                                'presupuesto_id' => $presupuestos->id,
+                                'alumno_id' => $alumno['alumno'],
+                                'curso_id' => $curso['curso'],
+                                'precio' => $curso['precio'],
+                                'horas' => $curso['horas'],
+                            ];
+                            $conceptos = PresupuestosAlumnoCurso::firstWhere('id', $alumno['id'])->update($dataConcepto);
+                        } else {
+                            $dataConcepto = [
+                                'presupuesto_id' => $presupuestos->id,
+                                'alumno_id' => $alumno['alumno'],
+                                'curso_id' => $curso['curso'],
+                                'precio' => $curso['precio'],
+                                'horas' => $curso['horas'],
+                            ];
+                            $conceptos = PresupuestosAlumnoCurso::create($dataConcepto);
+                        }
+                    }
+                } else {
+                    $dataConcepto = [
+                        'presupuesto_id' => $presupuestos->id,
+                        'alumno_id' => $alumno['alumno'],
+                        'curso_id' => $alumno['curso'],
+                        'precio' => $alumno['precio'],
+                        'horas' => $alumno['horas'],
+                    ];
+                    $conceptos = PresupuestosAlumnoCurso::firstWhere('id', $alumno['id'])->update($dataConcepto);
+                }
+            } else {
+                if (isset($alumno['cursoMultiple']) && $alumno['cursoMultiple'] == true) {
+                    $dataConcepto = [
+                        'presupuesto_id' => $presupuestos->id,
+                        'alumno_id' => $alumno['alumno'],
+                        'curso_id' => $alumno['curso'],
+                        'precio' => $alumno['precio'],
+                        'horas' => $alumno['horas'],
+                    ];
+                    $conceptos = PresupuestosAlumnoCurso::create($dataConcepto);
+
+                    foreach ($this->cursos_multiples[$alumnoIndex] as $curso) {
+                        $dataConcepto = [
+                            'presupuesto_id' => $presupuestos->id,
+                            'alumno_id' => $alumno['alumno'],
+                            'curso_id' => $curso['curso'],
+                            'precio' => $curso['precio'],
+                            'horas' => $curso['horas'],
+                        ];
+                        $conceptos = PresupuestosAlumnoCurso::create($dataConcepto);
+                    }
+                } else {
+                    $dataConcepto = [
+                        'presupuesto_id' => $presupuestos->id,
+                        'alumno_id' => $alumno['alumno'],
+                        'curso_id' => $alumno['curso'],
+                        'precio' => $alumno['precio'],
+                        'horas' => $alumno['horas'],
+                    ];
+                    $conceptos = PresupuestosAlumnoCurso::create($dataConcepto);
+                }
+            }
+        }
+
         $presupuestos->precio = $totalPrecio;
 
         $presupuestos->save();
@@ -334,10 +462,26 @@ class EditComponent extends Component
         $presupuesto->delete();
         return redirect()->route('presupuestos.index');
     }
+    public function verCertificado($id)
+    {
+        if (is_numeric($this->alumnos[$id]['alumno']) && is_numeric($this->alumnos[$id]['curso'])) {
+            return redirect()->route('certificado.pdf', ['id' => $this->identificador, 'alumno_id' => $this->alumnos[$id]['alumno'], 'curso_id' => $this->alumnos[$id]['curso']]);
+        }
+    }
 
+    public function verCertificadoMultiple($id, $id2)
+    {
+        if (is_numeric($this->alumnos[$id]['alumno']) && is_numeric($this->cursos_multiples[$id][$id2]['curso'])) {
+            return redirect()->route('certificado.pdf', ['id' => $this->identificador, 'alumno_id' => $this->alumnos[$id]['alumno'], 'curso_id' => $this->cursos_multiples[$id][$id2]['curso']]);
+        }
+    }
     public function add()
     {
-        $this->alumnos[] = ['alumno' => "", 'curso' => "", 'precio' => "", 'existente' => 0];
+        $this->alumnos[] = ['alumno' => "", 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => 0, 'horas' => 0, 'existente' => 0];
+    }
+    public function addCurso($key)
+    {
+        $this->cursos_multiples[$key][] = ['curso' => "", 'precio' => 0, 'horas' => 0, 'existente' => 0];
     }
 
     public function addPrecio($i)
@@ -359,24 +503,16 @@ class EditComponent extends Component
         $this->alumnos = array_values($this->alumnos);
     }
 
-    public function checkNuevoAlumno($i)
+    public function addAlumnoSelect($texto)
     {
-        if (isset($this->alumnos[$i]["alumno"])) {
-            if (is_numeric($this->alumnos[$i]['alumno'])) {
-                $this->nuevo_alumno[$i] == false;
-            } else {
-                $this->nuevo_alumno[$i] == true;
-            }
+        if (!is_numeric($texto)) {
+            $this->alumnos_select[] = $texto;
         }
     }
-    public function checkNuevoCurso($i)
+    public function addCursoSelect($texto)
     {
-        if (isset($this->alumnos[$i]["curso"])) {
-            if (is_numeric($this->alumnos[$i]['curso'])) {
-                $this->nuevo_curso[$i] == false;
-            } else {
-                $this->nuevo_curso[$i] == true;
-            }
+        if (!is_numeric($texto)) {
+            $this->cursos_select[] = $texto;
         }
     }
 }
