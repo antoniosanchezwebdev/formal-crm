@@ -86,6 +86,7 @@
     .textoFooter {
         position: absolute;
         bottom: 2%;
+        left: 5%;
         text-align: center;
         vertical-align: text-bottom;
         font-size: 80%;
