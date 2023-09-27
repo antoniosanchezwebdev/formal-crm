@@ -179,14 +179,14 @@
                     <img src="{{ storage_path("app/public/$firmaMonitor") }}" class="firma-monitor" width="150px"
                         height="100px">
                 @endif
-                <p>D. {{ $nombreMonitor }} <br>
+                <p style="margin-top: -30px !important;">D. {{ $nombreMonitor }} <br>
                     Monitor Nacional de Trabajos Verticales ANETVA
                 </p>
             </div>
         </div>
 
         <div>
-            <p class="textoFooter" style="margin-top: -20px !important;">Formal S.L. www.formal.es | Camino de la Ermita, 10. Polígono Industrial Gibraltar
+            <p class="textoFooter" style="margin-top: 20px !important;">Formal S.L. www.formal.es | Camino de la Ermita, 10. Polígono Industrial Gibraltar
                 11300
                 La Línea de la Concepción, Cádiz, España T. +34 956 763 055 | F. +34 956 690 254 </p>
         </div>
