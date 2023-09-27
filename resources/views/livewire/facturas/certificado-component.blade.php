@@ -63,8 +63,10 @@
     }
 
     .monitor p {
+        display: block;
         text-align: center;
         font-size: 13px;
+        position: absolute;
         bottom: 6%;
         right: 15%;
     }
@@ -82,6 +84,7 @@
     }
 
     .textoFooter {
+        display: block;
         text-align: center;
         vertical-align: text-bottom;
         font-size: 80%;
@@ -184,11 +187,9 @@
             </div>
         </div>
 
-        <div>
-            <p class="textoFooter" style="margin-top: 30px !important;">Formal S.L. www.formal.es | Camino de la Ermita, 10. Polígono Industrial Gibraltar
+            <p class="textoFooter">Formal S.L. www.formal.es | Camino de la Ermita, 10. Polígono Industrial Gibraltar
                 11300
                 La Línea de la Concepción, Cádiz, España T. +34 956 763 055 | F. +34 956 690 254 </p>
-        </div>
     </div>
     @if (!empty($curso->descripcion))
         <div class="pagina2">
