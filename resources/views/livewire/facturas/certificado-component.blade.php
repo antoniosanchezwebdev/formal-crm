@@ -185,10 +185,11 @@
             </div>
         </div>
 
-
-        <p class="textoFooter">Formal S.L. www.formal.es | Camino de la Ermita, 10. Polígono Industrial Gibraltar 11300
-            La Línea de la Concepción, Cádiz, España T. +34 956 763 055 | F. +34 956 690 254 </p>
-
+        <div>
+            <p class="textoFooter">Formal S.L. www.formal.es | Camino de la Ermita, 10. Polígono Industrial Gibraltar
+                11300
+                La Línea de la Concepción, Cádiz, España T. +34 956 763 055 | F. +34 956 690 254 </p>
+        </div>
     </div>
     @if (!empty($curso->descripcion))
         <div class="pagina2">
