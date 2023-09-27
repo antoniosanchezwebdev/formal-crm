@@ -282,7 +282,7 @@
                             </td>
                             <td width="10%">
                                 <button class="btn text-white btn-info btn-sm"
-                                wire:click.prevent="verCertificado({{$alumnoKey}})">HOLA</button>
+                                wire:click.prevent="verCertificado({{$alumnoKey}})">Ver certificado</button>
                             </td>
                             <td width="10%">
                                 <button class="btn text-white btn-danger btn-sm"
@@ -344,7 +344,7 @@
                                     </td>
                                     <td width="10%">
                                         <button class="btn text-white btn-info btn-sm"
-                                        wire:click.prevent="verCertificadoMultiple({{$alumnoKey}}, {{$multipleKey}})">HOLA</button>
+                                        wire:click.prevent="verCertificadoMultiple({{$alumnoKey}}, {{$multipleKey}})">Ver certificado</button>
                                     </td>
                                     <td width="10%">
                                         <button class="btn text-white btn-danger btn-sm"
