@@ -179,7 +179,7 @@
                     <img src="{{ storage_path("app/public/$firmaMonitor") }}" class="firma-monitor" width="150px"
                         height="100px">
                 @endif
-                <p>D. {{ $nombreMonitor }} <br>
+                <p style="margin-top: -20px !important;">D. {{ $nombreMonitor }} <br>
                     Monitor Nacional de Trabajos Verticales ANETVA
                 </p>
             </div>
