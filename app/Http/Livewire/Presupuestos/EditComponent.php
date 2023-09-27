@@ -337,7 +337,7 @@ class EditComponent extends Component
                                 'precio' => $curso['precio'],
                                 'horas' => $curso['horas'],
                             ];
-                            $conceptos = PresupuestosAlumnoCurso::firstWhere('id', $alumno['id'])->update($dataConcepto);
+                            $conceptos = PresupuestosAlumnoCurso::firstWhere('id', $curso['id'])->update($dataConcepto);
                         } else {
                             $dataConcepto = [
                                 'presupuesto_id' => $presupuestos->id,

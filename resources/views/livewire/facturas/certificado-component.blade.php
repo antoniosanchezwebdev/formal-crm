@@ -98,13 +98,13 @@
         margin-right: 20px;
     }
 
-    .pagina2 strong{
+    .pagina2 strong {
         color: #fa2104;
         font-weight: bold;
     }
 
     .pagina2 h2 {
-        margin-top:40px ;
+        margin-top: 40px;
         color: black !important;
         margin-bottom: -10px;
     }
@@ -152,7 +152,7 @@
         <!-- Contenido de la barra lateral -->
     </div>
     <div class="contenedor-imagen">
-        <img src="{{ public_path('/assets/backgroundTotal.PNG') }}" alt="Imagen de fondo" class="imagen-fondo">
+        <img src="{{ public_path('/assets/backgroundTotal.PNG') }}" class="imagen-fondo">
 
         <p class="textoAcreditar">Acreditan en <strong> {{ $cursoCelebracion }} a {{ $cursoFechaCelebracion }}
             </strong> que</p>
@@ -171,11 +171,13 @@
 
         <div class="firmas">
             <div>
-                <img src="{{ public_path('/assets/firmas.PNG') }}" alt="Imagen de fondo" class="imagen-firma">
+                <img src="{{ public_path('/assets/firmas.PNG') }}" class="imagen-firma">
             </div>
             <div class="monitor">
-                <img src="{{ storage_path("app/public/$firmaMonitor") }}" alt="Imagen de fondo" class="firma-monitor"
-                    width="150px" height="100px">
+                @if (file_exists(storage_path("app/public/$firmaMonitor")))
+                    <img src="{{ storage_path("app/public/$firmaMonitor") }}" class="firma-monitor" width="150px"
+                        height="100px">
+                @endif
                 <p>D. {{ $nombreMonitor }} <br>
                     Monitor Nacional de Trabajos Verticales ANETVA
                 </p>
@@ -187,17 +189,17 @@
             La Línea de la Concepción, Cádiz, España T. +34 956 763 055 | F. +34 956 690 254 </p>
 
     </div>
+    @if (!empty($curso->descripcion))
+        <div class="pagina2">
 
-    <div class="pagina2">
+            <div class="sideimage">
+                <img src="{{ public_path('/assets/backgroundLateral.PNG') }}" class="imagen-fondo">
+            </div>
 
-        <div class="sideimage">
-            <img src="{{ public_path('/assets/backgroundLateral.PNG') }}" alt="Imagen de fondo" class="imagen-fondo">
+            <div>{!! html_entity_decode($curso->descripcion) !!}</div>
+
         </div>
-
-        <div>{!! html_entity_decode($curso->descripcion) !!}</div>
-
-    </div>
-
+    @endif
 
 </body>
 

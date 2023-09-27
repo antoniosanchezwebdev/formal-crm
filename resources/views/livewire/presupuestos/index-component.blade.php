@@ -92,7 +92,7 @@
                 <tbody>
                     @if (count($presupuestos) > 0)
                     {{-- Recorre los presupuestos --}}
-                    @foreach ($presupuestos as $presup)
+                    @foreach ($presupuestos->sortByDesc('updated_at') as $presup)
                     @if($presup->show < 1)
                     <tr>
                         <td>{{ $presup->numero_presupuesto }}</th>
