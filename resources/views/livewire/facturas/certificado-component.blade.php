@@ -39,7 +39,7 @@
     .textoCurso {
         text-align: center;
         color: #FA3804;
-        font-size: 300%;
+        font-size: 200%;
 
     }
 
