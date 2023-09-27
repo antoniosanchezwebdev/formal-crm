@@ -187,7 +187,8 @@
                         <th width="10%">¿Atiende más de un curso?</th>
                         <th width="10%">Precio</th>
                         <th width="10%">Horas</th>
-                        <th width="20%">Eliminar</th>
+                        <th width="10%">Certificado</th>
+                        <th width="10%">Eliminar</th>
                     </tr>
                 </thead>
                 @foreach ($alumnos as $alumnoKey => $alumnoValue)
