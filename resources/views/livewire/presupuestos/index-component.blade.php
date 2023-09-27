@@ -44,6 +44,7 @@
         <div x-data="{}" x-init="$nextTick(() => {
             var table = $('#tablePresupuestos{{$llave}}').DataTable({
                 responsive: true,
+                ordering: false,
                 dom: 'Bfrtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
