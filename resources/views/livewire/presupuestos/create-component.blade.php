@@ -215,8 +215,8 @@
                             });
                             $('#alumnosSelect{{ $alumnoKey }}').on('change', function(e) {
                                 @this.set('alumnos.{{ $alumnoKey }}.alumno', $('#alumnosSelect{{ $alumnoKey }}').val());
-                                @this.set('alumnos.{{ $alumnoKey }}.dni', {{$this->getDNI($this->alumnos[$alumnoKey]['alumno'])}});
                                 @this.addAlumnoSelect($('#alumnosSelect{{ $alumnoKey }}').val());
+                                @this.getDNI($('#alumnosSelect{{ $alumnoKey }}').val());
                             });" width="25%"
                                 wire:key="{{ rand() }}">
                                 <select wire:model="alumnos.{{ $alumnoKey }}.alumno" class="form-control"
@@ -248,8 +248,8 @@
                                     <span class="text-danger error">{{ $message }}</span>
                                 @enderror
                             </td>
-                            <td width="15%"><input type="text" step="any" class="form-control"
-                                    wire:model="alumnos.{{ $alumnoKey }}.dni" placeholder="Precio Total">
+                            <td width="15%"><input type="text" class="form-control"
+                                    wire:model="alumnos.{{ $alumnoKey }}.dni" placeholder="DNI">
                                 @error('precio.0')
                                     <span class="text-danger error">{{ $message }}</span>
                                 @enderror

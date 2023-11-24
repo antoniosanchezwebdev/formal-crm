@@ -264,13 +264,14 @@ class CreateComponent extends Component
         return [
             'confirmed',
             'calcularPrecio',
-            'getDNI'
         ];
     }
 
-    public function getDNI($id){
-        if(is_numeric($id)){
-            return Alumno::find($id)->dni;
+    public function getDNI($id)
+    {
+        if (is_numeric($this->alumnos[$id]['alumno'])) {
+            $alumno = Alumno::find($this->alumnos[$id]['alumno']);
+            $this->alumnos[$id]['dni'] = $alumno->dni;
         }
     }
 
@@ -340,7 +341,7 @@ class CreateComponent extends Component
                     foreach ($this->cursos_multiples[$alumnoIndex] as $curso) {
                         $precio += (int) $curso["precio"];
                     }
-                }else{
+                } else {
                     $precio += $alumno["precio"];
                 }
             }
