@@ -310,7 +310,7 @@ class PresupuestoController extends Controller
             'totalPrecioCurso',
             'iva',
             'rango_fechas',
-            'numero_presupuesto'
+            'numeroPresupuesto'
         ));
         $pdf->render();
         $font = $pdf->getFontMetrics()->get_font("helvetica");
