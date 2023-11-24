@@ -265,7 +265,7 @@ class PresupuestoController extends Controller
                     $cursos[$curso->id] = [
                         'nombre_curso' => $curso->nombre,
                         'horas_curso' => $curso->horas,
-                        'precio_curso' => $curso->precio,
+                        'precio_curso' => $presup->precio,
                         'denominacion_curso' => CursosDenominacion::find($curso->denominacion_id)->nombre,
                         'alumnos' => []
                     ];
