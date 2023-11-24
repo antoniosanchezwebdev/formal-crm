@@ -215,8 +215,9 @@
                             });
                             $('#alumnosSelect{{ $alumnoKey }}').on('change', function(e) {
                                 @this.set('alumnos.{{ $alumnoKey }}.alumno', $('#alumnosSelect{{ $alumnoKey }}').val());
+                                @this.set('alumnos.{{ $alumnoKey }}.dni', {{$this->getDNI($this->alumnos[$alumnoKey]['alumno'])}});
                                 @this.addAlumnoSelect($('#alumnosSelect{{ $alumnoKey }}').val());
-                            });" width="30%"
+                            });" width="25%"
                                 wire:key="{{ rand() }}">
                                 <select wire:model="alumnos.{{ $alumnoKey }}.alumno" class="form-control"
                                     name="observaciones" id="alumnosSelect{{ $alumnoKey }}" wire:ignore.self>
@@ -244,6 +245,12 @@
                                 </select>
                                 {{-- <input type="text" class="form-control" placeholder="Nombre" wire:model="nameProducto.0"> --}}
                                 @error('nameProducto.0')
+                                    <span class="text-danger error">{{ $message }}</span>
+                                @enderror
+                            </td>
+                            <td width="15%"><input type="text" step="any" class="form-control"
+                                    wire:model="alumnos.{{ $alumnoKey }}.dni" placeholder="Precio Total">
+                                @error('precio.0')
                                     <span class="text-danger error">{{ $message }}</span>
                                 @enderror
                             </td>
@@ -297,7 +304,7 @@
                                     <span class="text-danger error">{{ $message }}</span>
                                 @enderror
                             </td>
-                            <td width="20%">
+                            <td width="10%">
                                 <button class="btn text-white btn-danger btn-sm"
                                     wire:click.prevent="removeInput({{ $i }})">X</button>
                             </td>

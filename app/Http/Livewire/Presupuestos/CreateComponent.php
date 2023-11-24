@@ -144,14 +144,14 @@ class CreateComponent extends Component
                         $apellido1 = array_pop($secciones);
                         $nombre = implode(' ', $secciones);
                         $apellido = $apellido1 . ' ' . $apellido2;
-                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido]);
+                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido, 'dni' => $alumno['dni']]);
                         $alumnos_subidos[$alumno['alumno']] = $nuevo_alumno->id;
                         $this->alumnos[$alumnoIndex]['alumno'] = $nuevo_alumno->id;
                     } else {
                         $secciones = explode(' ', $alumno['alumno']);
                         $apellido = array_pop($secciones);
                         $nombre = implode(' ', $secciones);
-                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido]);
+                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido, 'dni' => $alumno['dni']]);
                         $alumnos_subidos[$alumno['alumno']] = $nuevo_alumno->id;
                         $this->alumnos[$alumnoIndex]['alumno'] = $nuevo_alumno->id;
                     }
@@ -264,7 +264,14 @@ class CreateComponent extends Component
         return [
             'confirmed',
             'calcularPrecio',
+            'getDNI'
         ];
+    }
+
+    public function getDNI($id){
+        if(is_numeric($id)){
+            return Alumno::find($id)->dni;
+        }
     }
 
     // Función para cuando se llama a la alerta
@@ -276,7 +283,7 @@ class CreateComponent extends Component
 
     public function add()
     {
-        $this->alumnos[] = ['alumno' => "", 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => 0, 'horas' => 0];
+        $this->alumnos[] = ['alumno' => "", 'dni' => '', 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => 0, 'horas' => 0];
     }
     public function addCurso($key)
     {
