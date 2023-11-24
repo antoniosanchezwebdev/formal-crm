@@ -257,7 +257,7 @@ class PresupuestoController extends Controller
                     $cursos[$curso->id] = [
                         'nombre_curso' => $curso->nombre,
                         'horas_curso' => $curso->horas,
-                        'precio_curso' => $curso->precio,
+                        'precio_curso' => $presup->precio,
                         'denominacion_curso' => 'Sin denominación',
                         'alumnos' => []
                     ];
@@ -345,7 +345,7 @@ class PresupuestoController extends Controller
 
         // Fecha del final del curso
         if($presupuesto->rangosFecha()->count() > 0){
-            $date = Carbon::createFromFormat('Y-m-d', $presupuesto->rangosFecha()->get()->last()->fecha_2);
+            $date = Carbon::createFromFormat('Y-m-d', $presupuesto->rangosFecha()->get()->last()->fecha_1);
             $diaMes = $date->day;
             $nombreMes = ucfirst($date->monthName);
             $numeroMes = $date->month;
@@ -353,6 +353,15 @@ class PresupuestoController extends Controller
             $cursoFechaCelebracion = $diaMes . " de " . $nombreMes . " de " . $anioMes;
 
             $cursoFechaCelebracionConBarras = $diaMes . "/" . $numeroMes . "/" . $anioMes;
+
+            $date = Carbon::createFromFormat('Y-m-d', $presupuesto->rangosFecha()->get()->last()->fecha_2);
+            $diaMes = $date->day;
+            $nombreMes = ucfirst($date->monthName);
+            $numeroMes = $date->month;
+            $anioMes = $date->year;
+            $cursoFechaCelebracion2 = $diaMes . " de " . $nombreMes . " de " . $anioMes;
+
+            $cursoFechaCelebracionConBarras2 = $diaMes . "/" . $numeroMes . "/" . $anioMes;
         }else{
             $cursoFechaCelebracion = 'Sin fecha';
             $cursoFechaCelebracionConBarras = 'Sin fecha';
@@ -371,6 +380,8 @@ class PresupuestoController extends Controller
                 'cursoCelebracion',
                 'cursoFechaCelebracion',
                 'cursoFechaCelebracionConBarras',
+                'cursoFechaCelebracion2',
+                'cursoFechaCelebracionConBarras2',
                 'alumno',
                 'curso',
                 'firmaMonitor',

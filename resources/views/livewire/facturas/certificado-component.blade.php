@@ -159,7 +159,7 @@
     <div class="contenedor-imagen">
         <img src="{{ public_path('/assets/backgroundTotal.PNG') }}" class="imagen-fondo">
 
-        <p class="textoAcreditar">Acreditan en <strong> {{ $cursoCelebracion }} a {{ $cursoFechaCelebracion }}
+        <p class="textoAcreditar">Acreditan en <strong> {{ $cursoCelebracion }} a {{ $cursoFechaCelebracion2 }}
             </strong> que</p>
 
         <h1 class="textoNombre">D. {{ $alumno->nombre }} {{ $alumno->apellidos }}</h1>
@@ -170,8 +170,8 @@
 
         <p class="textoDescripcion">Impartido por el Centro de Formación e Investigación de Riesgos de Trabajos en
             Altura,
-            con una carga lectiva total de <strong> {{ $curso->duracion }} horas </strong> celebrado el día
-            {{ $cursoFechaCelebracionConBarras }}.
+            con una carga lectiva total de <strong> {{ $curso->duracion }} horas </strong> celebrado desde el día
+            {{ $cursoFechaCelebracionConBarras }}, hasta el día {{ $cursoFechaCelebracionConBarras2 }}.
             El temario corresponde a las materias Prácticas y Teóricas descritas en el reverso. </p>
 
         <div class="firmas">
