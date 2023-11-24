@@ -227,7 +227,7 @@
                                 @this.set('alumnos.{{ $alumnoKey }}.alumno', $('#alumnosSelect{{ $alumnoKey }}').val());
                                 @this.addAlumnoSelect($('#alumnosSelect{{ $alumnoKey }}').val());
                                 @this.getDNI({{ $alumnoKey }});
-                            });" width="30%"
+                            });" width="20%"
                                 wire:key="{{ rand() }}">
                                 <select wire:model="alumnos.{{ $alumnoKey }}.alumno" class="form-control"
                                     name="observaciones" id="alumnosSelect{{ $alumnoKey }}" wire:ignore.self>
@@ -314,11 +314,11 @@
                                     <span class="text-danger error">{{ $message }}</span>
                                 @enderror
                             </td>
-                            <td width="10%">
+                            <td width="5%">
                                 <button class="btn text-white btn-info btn-sm"
                                     wire:click.prevent="verCertificado({{ $alumnoKey }})">Ver certificado</button>
                             </td>
-                            <td width="10%">
+                            <td width="5%">
                                 <button class="btn text-white btn-danger btn-sm"
                                     wire:click.prevent="removeInput({{ $i }})">X</button>
                             </td>
