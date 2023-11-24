@@ -309,14 +309,15 @@ class PresupuestoController extends Controller
             'alumnos',
             'totalPrecioCurso',
             'iva',
-            'rango_fechas'
+            'rango_fechas',
+            'numero_presupuesto'
         ));
         $pdf->render();
         $font = $pdf->getFontMetrics()->get_font("helvetica");
         $pdf->getCanvas()->page_text(65, 52, "FORMAL", $font, 10, array(0, 0, 0));
         $pdf->getCanvas()->page_text(65, 65, "$numeroPresupuesto", $font, 10, array(0, 0, 0));
         $pdf->getCanvas()->page_text(65, 78, "Página {PAGE_NUM} de {PAGE_COUNT}", $font, 10, array(0, 0, 0));
-        return $pdf->stream();
+        return $pdf->stream($numeroPresupuesto . "_"  . $nombreCliente . ".pdf");
     }
 
     public function certificado($id, $alumno_id, $curso_id)
