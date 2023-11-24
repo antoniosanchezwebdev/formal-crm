@@ -108,9 +108,9 @@ class CreateComponent extends Component
         }
     }
 
-    public function updatedCod_postal($value)
+    public function cambiarCodPostal()
     {
-        $localidad = Localidad::where('codigoPostal', $value)->first();
+        $localidad = Localidad::where('cod_postal', $this->cod_postal)->first();
 
         if ($localidad) {
             $this->localidad = $localidad->localidad;
@@ -118,9 +118,9 @@ class CreateComponent extends Component
         }
     }
 
-    public function updatedLocalidad($value)
+    public function cambiarLocalidad()
     {
-        $localidad = Localidad::where('localidad', $value)->first();
+        $localidad = Localidad::where('localidad', $this->localidad)->first();
 
         if ($localidad) {
             $this->cod_postal = $localidad->codigoPostal;

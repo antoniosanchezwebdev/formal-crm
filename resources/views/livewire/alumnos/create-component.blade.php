@@ -167,7 +167,7 @@
         <div class="mb-3 row d-flex align-items-center">
             <label for="localidad" class="col-sm-2 col-form-label">Localidad </label>
             <div class="col-sm-10">
-                <input type="text" wire:model="localidad" class="form-control" name="localidad" id="localidad"
+                <input type="text" wire:model.defer="localidad" class="form-control" name="localidad" id="localidad" wire:change='cambiarLocalidad'
                     placeholder="Algeciras">
                 @error('localidad')
                     <span class="text-danger">{{ $message }}</span>
@@ -191,7 +191,7 @@
         <div class="mb-3 row d-flex align-items-center">
             <label for="cod_postal" class="col-sm-2 col-form-label">Cod. Postal </label>
             <div class="col-sm-10">
-                <input type="text" wire:model="cod_postal" class="form-control" name="cod_postal" id="cod_postal"
+                <input type="text" wire:model.defer="cod_postal" class="form-control" name="cod_postal" id="cod_postal" wire:change='cambiarCodPostal'
                     placeholder="11749">
                 @error('cod_posta')
                     <span class="text-danger">{{ $message }}</span>
@@ -358,7 +358,7 @@
                     @if (substr($path->getClientOriginalName(), strlen($path->getClientOriginalName()) - 3, 3) === 'pdf')
                         <div class="image">
                             <a href="{{ $path->temporaryUrl() }}" target="_blank">
-                                <figure class="pdf" 
+                                <figure class="pdf"
                                 {{-- wire:click="removeImg({{ $index }})" --}}
                                 ><img
                                         src="{{ asset('assets/pdf_icon.png') }}" class="rounded" height="50"
