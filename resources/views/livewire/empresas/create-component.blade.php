@@ -59,7 +59,7 @@
                     <div class="mb-3 row d-flex align-items-center">
                         <label for="cod_postal" class="col-sm-2 col-form-label">Cod. Postal </label>
                         <div class="col-sm-10">
-                          <input type="text" wire:model="cod_postal" class="form-control" name="cod_postal" id="cod_postal" placeholder="11574...">
+                          <input type="text" wire:model="cod_postal" class="form-control" name="cod_postal" id="cod_postal" placeholder="11574..." wire:model.defer="cod_postal" wire:change='cambiarCodPostal'>
                           @error('cod_postal') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                     <div class="mb-3 row d-flex align-items-center">
                         <label for="localidad" class="col-sm-2 col-form-label">Localidad </label>
                         <div class="col-sm-10">
-                          <input type="text" wire:model="localidad" class="form-control" name="localidad" id="localidad" placeholder="Algeciras...">
+                          <input type="text" wire:model="localidad" class="form-control" name="localidad" id="localidad" placeholder="Algeciras..." wire:model.defer="localidad" wire:change='cambiarLocalidad'>
                           @error('localidad') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                     </div>

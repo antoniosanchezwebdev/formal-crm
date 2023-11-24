@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Alumnos;
 
 use App\Models\Alumno;
-use App\Models\Alumnos;
+use App\Models\Localidad;
 use App\Models\Empresa;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -74,6 +74,25 @@ class EditComponent extends Component
         return view('livewire.alumnos.edit-component');
     }
 
+    public function cambiarCodPostal()
+    {
+        $localidad = Localidad::where('cod_postal', $this->cod_postal)->first();
+
+        if ($localidad) {
+            $this->localidad = $localidad->poblacion;
+            $this->provincia = $localidad->provincia;
+        }
+    }
+
+    public function cambiarLocalidad()
+    {
+        $localidad = Localidad::where('localidad', $this->localidad)->first();
+
+        if ($localidad) {
+            $this->cod_postal = $localidad->cod_postal;
+            $this->provincia = $localidad->provincia;
+        }
+    }
     public function removeImg($index)
     {
         $path = $this->filesPath[$index];
@@ -120,10 +139,10 @@ class EditComponent extends Component
             array_push($this->filesPath, $path);
         }
         // if ($validate) {
-           
+
         //     return true;
         // } else {
-           
+
         //     return false;
         // }
     }
@@ -213,7 +232,7 @@ class EditComponent extends Component
             session()->flash('message', 'Alumno actualizado correctamente.');
 
             $this->emit('productUpdated');
-        
+
     }
 
 

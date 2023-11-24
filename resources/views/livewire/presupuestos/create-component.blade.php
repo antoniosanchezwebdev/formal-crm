@@ -203,7 +203,11 @@
                         <th width="20%">Eliminar</th>
                     </tr>
                 </thead>
-                @foreach ($alumnos as $alumnoKey => $alumnoValue)
+                @for ($i = count($alumnos) - 1; $i >= 0; $i--)
+                    @php
+                        $alumnoKey = $i;
+                        $alumnoValue = $alumnos[$i];
+                    @endphp
                     <tbody>
                         <tr>
                             <td x-data="{}" x-init="$('#alumnosSelect{{ $alumnoKey }}').select2({
@@ -358,7 +362,7 @@
                                 </tr>
                             @endforeach
                         @endif
-                @endforeach
+                @endfor
                 </tbody>
             </table>
             <br>

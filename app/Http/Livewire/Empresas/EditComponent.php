@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Empresas;
 
 use App\Models\Empresa;
+use App\Models\Localidad;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 
@@ -45,6 +46,23 @@ class EditComponent extends Component
         return view('livewire.empresas.edit-component');
     }
 
+    public function cambiarCodPostal()
+    {
+        $localidad = Localidad::where('cod_postal', $this->cod_postal)->first();
+
+        if ($localidad) {
+            $this->localidad = $localidad->poblacion;
+        }
+    }
+
+    public function cambiarLocalidad()
+    {
+        $localidad = Localidad::where('localidad', $this->localidad)->first();
+
+        if ($localidad) {
+            $this->cod_postal = $localidad->cod_postal;
+        }
+    }
     // Al hacer update en el formulario
     public function update()
     {
