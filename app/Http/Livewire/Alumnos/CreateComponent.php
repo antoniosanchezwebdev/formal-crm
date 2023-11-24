@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Alumnos;
 
 use App\Models\Alumno;
 use App\Models\Empresa;
+use App\Models\Localidad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -55,7 +56,8 @@ class CreateComponent extends Component
     }
 
 
-    public function removeImg($index){
+    public function removeImg($index)
+    {
         $path = $this->filesPath[$index];
         if (Storage::exists("public/$path")) {
             Storage::delete("public/$path");
@@ -63,7 +65,7 @@ class CreateComponent extends Component
         }
     }
 
-    public function finishUpload($name, $tmpPath, $isMultiple) 
+    public function finishUpload($name, $tmpPath, $isMultiple)
     {
 
         $this->cleanupOldUploads();
@@ -71,22 +73,21 @@ class CreateComponent extends Component
         $files = collect($tmpPath)->map(function ($i) {
 
             return TemporaryUploadedFile::createFromLivewire($i);
-
         })->toArray();
 
         $this->emitSelf('upload:finished', $name, collect($files)->map->getFilename()->toArray());
 
- 
+
 
         $files = array_merge($this->getPropertyValue($name), $files);
 
         // array_push($this->files, $files);
 
         $this->syncInput($name, $files);
+    }
 
-    } 
-
-    public function removeElement($index){
+    public function removeElement($index)
+    {
         array_splice($this->files, $index, 1);
     }
 
@@ -107,12 +108,30 @@ class CreateComponent extends Component
         }
     }
 
+    public function updatedCod_postal($value)
+    {
+        $localidad = Localidad::where('codigoPostal', $value)->first();
 
-    
+        if ($localidad) {
+            $this->localidad = $localidad->localidad;
+            $this->provincia = $localidad->provincia;
+        }
+    }
+
+    public function updatedLocalidad($value)
+    {
+        $localidad = Localidad::where('localidad', $value)->first();
+
+        if ($localidad) {
+            $this->cod_postal = $localidad->codigoPostal;
+            $this->provincia = $localidad->provincia;
+        }
+    }
+
     public function addFiles($file)
     {
         // dd($files);
-       array_push($this->files, $file);
+        array_push($this->files, $file);
     }
     // Al hacer submit en el formulario
     public function submit()
@@ -158,44 +177,45 @@ class CreateComponent extends Component
 
         // if ($validateFiles) {
 
-            $this->save();
-            $filesPath = json_encode($this->filesPath);
-            // Guardar datos validados
-            $alumnosSave = Alumno::create(array_merge($validatedData, [
-                'nombre' => $this->nombre,
-                'empresa_id' => $this->empresa_id,
-                'apellidos' => $this->apellidos,
-                'dni' => $this->dni,
-                'fecha_nac' => $this->fecha_nac,
-                'direccion' => $this->direccion,
-                'localidad' => $this->localidad,
-                'provincia' => $this->provincia,
-                'cod_postal' => $this->cod_postal,
-                'cod_winda' => $this->cod_winda,
-                'pais' => $this->pais,
-                'telefono' => $this->telefono,
-                'movil' => $this->movil,
-                'email' => $this->email,
-                "filesPath" => $filesPath]));
+        $this->save();
+        $filesPath = json_encode($this->filesPath);
+        // Guardar datos validados
+        $alumnosSave = Alumno::create(array_merge($validatedData, [
+            'nombre' => $this->nombre,
+            'empresa_id' => $this->empresa_id,
+            'apellidos' => $this->apellidos,
+            'dni' => $this->dni,
+            'fecha_nac' => $this->fecha_nac,
+            'direccion' => $this->direccion,
+            'localidad' => $this->localidad,
+            'provincia' => $this->provincia,
+            'cod_postal' => $this->cod_postal,
+            'cod_winda' => $this->cod_winda,
+            'pais' => $this->pais,
+            'telefono' => $this->telefono,
+            'movil' => $this->movil,
+            'email' => $this->email,
+            "filesPath" => $filesPath
+        ]));
 
-            // Alertas de guardado exitoso
-            if ($alumnosSave) {
-                $this->alert('success', '¡Alumno registrado correctamente!', [
-                    'position' => 'center',
-                    // 'timer' => 3000,
-                    'toast' => false,
-                    'showConfirmButton' => true,
-                    'onConfirmed' => 'confirmed',
-                    'confirmButtonText' => 'ok',
-                    // 'timerProgressBar' => true,
-                ]);
-            } else {
-                $this->alert('error', '¡No se ha podido guardar la información del alumno!', [
-                    'position' => 'center',
-                    'timer' => 3000,
-                    'toast' => false,
-                ]);
-            }
+        // Alertas de guardado exitoso
+        if ($alumnosSave) {
+            $this->alert('success', '¡Alumno registrado correctamente!', [
+                'position' => 'center',
+                // 'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                // 'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido guardar la información del alumno!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
         // }
     }
 
