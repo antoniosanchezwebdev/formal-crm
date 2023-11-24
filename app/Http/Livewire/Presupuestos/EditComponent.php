@@ -121,6 +121,7 @@ class EditComponent extends Component
                     $dni = Alumno::find($presAlumnoCurso->alumno_id)->dni != null ? Alumno::find($presAlumnoCurso->alumno_id)->dni : '';
                     $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'dni' => $dni, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => true, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
                 } else {
+                    $dni = Alumno::find($presAlumnoCurso->alumno_id)->dni != null ? Alumno::find($presAlumnoCurso->alumno_id)->dni : '';
                     $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'dni' => $dni, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => false, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
                 }
             } else {
