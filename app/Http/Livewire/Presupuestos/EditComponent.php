@@ -118,9 +118,10 @@ class EditComponent extends Component
             if (!isset($alumnos_existentes[$presAlumnoCurso->alumno_id])) {
                 $alumnos_existentes[$presAlumnoCurso->alumno_id] = $presAlumnoCursoIndex;
                 if ($presupuestosAlumnosCursos->where('presupuesto_id', $presAlumnoCurso->presupuesto_id)->where('alumno_id', $presAlumnoCurso->alumno_id)->count() >= 2) {
-                    $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => true, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
+                    $dni = Alumno::find($presAlumnoCurso->alumno_id)->dni != null ? Alumno::find($presAlumnoCurso->alumno_id)->dni : '';
+                    $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'dni' => $dni, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => true, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
                 } else {
-                    $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => false, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
+                    $this->alumnos[] = ['alumno' => $presAlumnoCurso->alumno_id, 'dni' => $dni, 'curso' => $presAlumnoCurso->curso_id, 'cursoMultiple' => false, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
                 }
             } else {
                 $this->cursos_multiples[$alumnos_existentes[$presAlumnoCurso->alumno_id]][] = ['curso' => $presAlumnoCurso->curso_id, 'precio' => $presAlumnoCurso->precio, 'horas' => $presAlumnoCurso->horas, 'existente' => 1, 'id' => $presAlumnoCurso->id];
@@ -270,14 +271,14 @@ class EditComponent extends Component
                         $apellido1 = array_pop($secciones);
                         $nombre = implode(' ', $secciones);
                         $apellido = $apellido1 . ' ' . $apellido2;
-                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido]);
+                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido, 'dni' => $alumno['dni']]);
                         $alumnos_subidos[$alumno['alumno']] = $nuevo_alumno->id;
                         $this->alumnos[$alumnoIndex]['alumno'] = $nuevo_alumno->id;
                     } else {
                         $secciones = explode(' ', $alumno['alumno']);
                         $apellido = array_pop($secciones);
                         $nombre = implode(' ', $secciones);
-                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido]);
+                        $nuevo_alumno = Alumno::create(['nombre' => $nombre, 'apellidos' => $apellido, 'dni' => $alumno['dni']]);
                         $alumnos_subidos[$alumno['alumno']] = $nuevo_alumno->id;
                         $this->alumnos[$alumnoIndex]['alumno'] = $nuevo_alumno->id;
                     }
@@ -477,7 +478,14 @@ class EditComponent extends Component
     }
     public function add()
     {
-        $this->alumnos[] = ['alumno' => "", 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => 0, 'horas' => 0, 'existente' => 0];
+        $this->alumnos[] = ['alumno' => "", 'dni' => '', 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => 0, 'horas' => 0, 'existente' => 0];
+    }
+    public function getDNI($id)
+    {
+        if (is_numeric($this->alumnos[$id]['alumno']) && $this->alumnos[$id]['alumno'] > 0) {
+            $alumno = Alumno::find($this->alumnos[$id]['alumno']);
+            $this->alumnos[$id]['dni'] = $alumno->dni;
+        }
     }
     public function addCurso($key)
     {
