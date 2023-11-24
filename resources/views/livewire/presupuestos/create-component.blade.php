@@ -195,12 +195,13 @@
                 <thead>
                     <tr>
                         <th width="20%">Alumno</th>
+                        <th width="10%">DNI</th>
                         <th width="10%">¿Tiene segundo apellido?</th>
                         <th width="20%">Curso</th>
                         <th width="10%">¿Atiende más de un curso?</th>
                         <th width="10%">Precio</th>
                         <th width="10%">Horas</th>
-                        <th width="20%">Eliminar</th>
+                        <th width="10%">Eliminar</th>
                     </tr>
                 </thead>
                 @for ($i = count($alumnos) - 1; $i >= 0; $i--)
@@ -216,8 +217,8 @@
                             $('#alumnosSelect{{ $alumnoKey }}').on('change', function(e) {
                                 @this.set('alumnos.{{ $alumnoKey }}.alumno', $('#alumnosSelect{{ $alumnoKey }}').val());
                                 @this.addAlumnoSelect($('#alumnosSelect{{ $alumnoKey }}').val());
-                                @this.getDNI($('#alumnosSelect{{ $alumnoKey }}').val());
-                            });" width="25%"
+                                @this.getDNI({{ $alumnoKey }});
+                            });" width="20%"
                                 wire:key="{{ rand() }}">
                                 <select wire:model="alumnos.{{ $alumnoKey }}.alumno" class="form-control"
                                     name="observaciones" id="alumnosSelect{{ $alumnoKey }}" wire:ignore.self>
@@ -248,7 +249,7 @@
                                     <span class="text-danger error">{{ $message }}</span>
                                 @enderror
                             </td>
-                            <td width="15%"><input type="text" class="form-control"
+                            <td width="10%"><input type="text" class="form-control"
                                     wire:model="alumnos.{{ $alumnoKey }}.dni" placeholder="DNI">
                                 @error('precio.0')
                                     <span class="text-danger error">{{ $message }}</span>
