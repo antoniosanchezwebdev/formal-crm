@@ -113,7 +113,7 @@ class CreateComponent extends Component
         $localidad = Localidad::where('cod_postal', $this->cod_postal)->first();
 
         if ($localidad) {
-            $this->localidad = $localidad->localidad;
+            $this->localidad = $localidad->poblacion;
             $this->provincia = $localidad->provincia;
         }
     }
