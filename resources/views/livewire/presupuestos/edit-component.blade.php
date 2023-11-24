@@ -204,7 +204,7 @@
                 <thead>
                     <tr>
                         <th width="20%">Alumno</th>
-                        <th width="5%">DNI</th>
+                        <th width="10%">DNI</th>
                         <th width="10%">¿Tiene segundo apellido?</th>
                         <th width="20%">Curso</th>
                         <th width="10%">¿Atiende más de un curso?</th>
