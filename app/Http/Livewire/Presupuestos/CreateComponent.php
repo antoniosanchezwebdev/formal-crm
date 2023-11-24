@@ -269,7 +269,7 @@ class CreateComponent extends Component
 
     public function getDNI($id)
     {
-        if (is_numeric($this->alumnos[$id]['alumno'])) {
+        if (is_numeric($this->alumnos[$id]['alumno']) && $this->alumnos[$id]['alumno'] > 0) {
             $alumno = Alumno::find($this->alumnos[$id]['alumno']);
             $this->alumnos[$id]['dni'] = $alumno->dni;
         }
