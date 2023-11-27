@@ -214,10 +214,10 @@ class PresupuestoController extends Controller
                     } else {
                         $emailCliente = $alumno->email;
                     }
-                    if ($alumno->cif == null) {
+                    if ($alumno->dni == null) {
                         $cifCliente = "Cliente sin CIF definido";
                     } else {
-                        $cifCliente = $alumno->cif;
+                        $cifCliente = $alumno->dni;
                     }
                     if ($alumno->telefono == null) {
                         $telefonoCliente = "Cliente sin telefono definido";
@@ -272,7 +272,7 @@ class PresupuestoController extends Controller
                 }
             }
 
-            $cursos[$curso->id]['alumnos'][] = ['nombre' => $alumno->nombre . " " . $alumno->apellidos, 'dni' => $alumno->cif];
+            $cursos[$curso->id]['alumnos'][] = ['nombre' => $alumno->nombre . " " . $alumno->apellidos, 'dni' => $alumno->dni];
 
             if (!isset($alumnos_existentes[$alumno->id])) {
                 $alumnos_existentes[$alumno->id] = 1;
