@@ -16,7 +16,7 @@ class IndexComponent extends Component
 
     public function mount()
     {
-        $this->alumnos = Alumno::all()->sortBy('created_at','desc');
+        $this->alumnos = Alumno::all()->sortByDesc('created_at');
         $this->empresas = Empresa::all();
     }
 
