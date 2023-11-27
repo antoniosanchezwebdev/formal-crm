@@ -261,7 +261,7 @@
                         <b>Alumnos:</b>
                         <ul>
                             @foreach($curso['alumnos'] as $alumno)
-                            <li>{{$alumno}}</li>
+                            <li>{{$alumno['nombre']}} ({{$alumno['dni']}})</li>
                             @endforeach
                         </ul>
                     </td>

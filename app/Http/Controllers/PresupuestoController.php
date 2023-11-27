@@ -272,7 +272,8 @@ class PresupuestoController extends Controller
                 }
             }
 
-            $cursos[$curso->id]['alumnos'][] = $alumno->nombre . " " . $alumno->apellidos;
+            $cursos[$curso->id]['alumnos'][] = ['nombre' => $alumno->nombre . " " . $alumno->apellidos, 'dni' => $alumno->cif];
+
             if (!isset($alumnos_existentes[$alumno->id])) {
                 $alumnos_existentes[$alumno->id] = 1;
                 $numeroAlumnos++;
