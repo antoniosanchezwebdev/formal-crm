@@ -118,6 +118,7 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
+            "order": [],
             buttons: [{
                 extend: 'collection',
                 text: 'Exportar',
