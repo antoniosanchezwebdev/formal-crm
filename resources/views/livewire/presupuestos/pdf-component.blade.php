@@ -112,7 +112,7 @@
     <p class="textoDato"> <strong class="textoDatoStrong">Asunto:</strong> Formación {{ implode(' + ', array_unique($cursosNombre)) }}
     </p>
     <p class="textoDato"> <strong class="textoDatoStrong">Cliente:</strong> {{ $nombreCliente }} - {{ $cifCliente }} - {{ $direccionCliente }}</p>
-    <p class="textoDato" style="margin-top: -20px !important;"> <strong class="textoDatoStrong" style="margin-top: -20px !important;">&nbsp;</strong> {{ $ztelefonoCliente }} - {{ $emailCliente }}</p>
+    <p class="textoDato" style="margin-top: -20px !important;"> <strong class="textoDatoStrong" style="margin-top: -20px !important;">&nbsp;</strong> {{ $telefonoCliente }} - {{ $emailCliente }}</p>
     <p class="textoDato"> <strong class="textoDatoStrong">Fecha:</strong> {{ $fechaEmisionFormateada }}</p>
     <p class="textoDato"> <strong class="textoDatoStrong">Ref. FORMAL</strong></p>
     <p class="textoDato"> <strong class="textoDatoStrong">Ref. CLIENTE</strong></p>
