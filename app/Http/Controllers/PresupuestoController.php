@@ -169,26 +169,26 @@ class PresupuestoController extends Controller
         // Nombre del cliente, si es empresa le da el nombre de la empresa y si es cliente le da el nombre del primer cliente asociado al presupuesto
         if ($presupuestoRecibido->empresa_id > 0 && $presupuestoRecibido->empresa_id != null) {
             $empresa = Empresa::where('id', $presupuestoRecibido->empresa_id)->first();
-            if ($empresa->nombre == null) {
+            if ($empresa->nombre === null) {
                 $nombreCliente = "Cliente sin nombre definido";
             } else {
                 $nombreCliente = $empresa->nombre;
             }
-            if ($empresa->email == null) {
+            if ($empresa->email === null) {
                 $emailCliente = "Cliente sin email definido";
             } else {
                 $emailCliente = $empresa->email;
             }
-            if ($empresa->cif == null) {
+            if ($empresa->cif === null) {
                 $cifCliente = "Cliente sin CIF definido";
             } else {
                 $cifCliente = $empresa->cif;
             }
-            if ($empresa->telefono == null) {
+            if ($empresa->telefono === null) {
             } else {
                 $telefonoCliente = $empresa->telefono;
             }
-            if ($empresa->direccion == null || $empresa->cod_postal == null || $empresa->localidad == null) {
+            if ($empresa->direccion === null || $empresa->cod_postal == null || $empresa->localidad == null) {
                 $telefonoCliente = "Cliente sin dirección definida";
             } else {
                 $direccionCliente = $empresa->direccion . ", " . $empresa->cod_postal . ", " . $empresa->localidad;
