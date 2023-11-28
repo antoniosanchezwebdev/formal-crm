@@ -193,9 +193,6 @@ class PresupuestoController extends Controller
             } else {
                 $direccionCliente = $empresa->direccion . ", " . $empresa->cod_postal . ", " . $empresa->localidad;
             }
-            $emailCliente = $empresa->email;
-            $cifCliente = $empresa->nombre;
-            $telefonoCliente = $empresa->nombre;
         } else if ($presupuestoRecibido->empresa_id == 0 || $presupuestoRecibido->empresa_id == null) {
             if (count($presupuestosAlumnoCurso) > 0) {
                 $alumno = Alumno::where('id', $presupuestosAlumnoCurso[0]->alumno_id)->first();
