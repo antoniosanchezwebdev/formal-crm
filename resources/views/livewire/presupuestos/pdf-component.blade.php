@@ -111,8 +111,8 @@
 
     <p class="textoDato"> <strong class="textoDatoStrong">Asunto:</strong> Formación {{ implode(' + ', array_unique($cursosNombre)) }}
     </p>
-    <p class="textoDato"> <strong class="textoDatoStrong">Cliente:</strong> {{ $nombreCliente }} @if($cifCliente != "Cliente sin CIF definido") - {{ $cifCliente }} @endif @if($direccionCliente != "Cliente sin dirección definida") - {{ $direccionCliente }} @endif</p>
-    <p class="textoDato" style="margin-top: -20px !important;"> <strong class="textoDatoStrong" style="margin-top: -20px !important;">&nbsp;</strong> @if($telefonoCliente != "Cliente sin telefono definido"){{ $telefonoCliente }} - @endif @if($emailCliente != "Cliente sin email definido"){{ $emailCliente }}@endif</p>
+    <p class="textoDato"> <strong class="textoDatoStrong">Cliente:</strong> {{ $nombreCliente }} - {{ $cifCliente }} - {{ $direccionCliente }} @endif</p>
+    <p class="textoDato" style="margin-top: -20px !important;"> <strong class="textoDatoStrong" style="margin-top: -20px !important;">&nbsp;</strong> {{ $ztelefonoCliente }} - {{ $emailCliente }}</p>
     <p class="textoDato"> <strong class="textoDatoStrong">Fecha:</strong> {{ $fechaEmisionFormateada }}</p>
     <p class="textoDato"> <strong class="textoDatoStrong">Ref. FORMAL</strong></p>
     <p class="textoDato"> <strong class="textoDatoStrong">Ref. CLIENTE</strong></p>
