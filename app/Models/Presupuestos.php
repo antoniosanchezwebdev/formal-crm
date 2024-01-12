@@ -28,7 +28,8 @@ class Presupuestos extends Model
         'precio',
         'estado',
         'observaciones',
-        'tiene_rangos_fecha'
+        'tiene_rangos_fecha',
+        'numero_alumnos'
     ];
 
     /**
@@ -49,5 +50,5 @@ class Presupuestos extends Model
     {
         return $this->hasMany(RangosFecha::class, 'presupuesto_id', 'id');
     }
-   
+
 }

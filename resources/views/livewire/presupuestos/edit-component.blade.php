@@ -192,10 +192,13 @@
     <div class="card mt-5">
         <div class="card-header">
             <div class="row">
-                <h4 class="col-10">Datos de alumnos y asignación de cursos</h4>
+                <h4 class="col-8">Datos de alumnos y asignación de cursos</h4>
                 <div class="col-2">
                     <button type="button" class="btn text-white btn-info w-100" wire:click="add()">Añadir
                         alumno</button>
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn text-white btn-info w-100 " wire:click="addUndefinedAlumnosGroup()">Alumnos Sin Definir</button>
                 </div>
             </div>
         </div>
@@ -203,15 +206,19 @@
             <table class="table" width="100%">
                 <thead>
                     <tr>
-                        <th width="20%">Alumno</th>
-                        <th width="10%">DNI</th>
-                        <th width="10%">¿Tiene segundo apellido?</th>
-                        <th width="20%">Curso</th>
-                        <th width="10%">¿Atiende más de un curso?</th>
-                        <th width="10%">Precio</th>
-                        <th width="10%">Horas</th>
-                        <th width="5%">Certificado</th>
-                        <th width="5%">Eliminar</th>
+                        @if ($numero_alumnos >= 1)
+                        <th width="10%">Nº alumnos</th>
+                    @else
+                    <th width="20%">Alumno</th>
+                    <th width="10%">DNI</th>
+                    <th width="10%">¿Tiene segundo apellido?</th>
+                    @endif
+                    <th width="20%">Curso</th>
+                    <th width="10%">¿Atiende más de un curso?</th>
+                    <th width="10%">Precio</th>
+                    <th width="10%">Horas</th>
+                    <th width="5%">Certificado</th>
+                    <th width="5%">Eliminar</th>
                     </tr>
                 </thead>
                 @for ($i = count($alumnos) - 1; $i >= 0; $i--)
@@ -219,7 +226,11 @@
                         $alumnoKey = $i;
                         $alumnoValue = $alumnos[$i];
                     @endphp <tbody>
-                        <tr>
+                        @if ($numero_alumnos >= 1)
+                            <td>
+                                <input type="number" wire:model="numero_alumnos" class="form-control"></td>
+                        @else
+                            <tr>
                             <td x-data="{}" x-init="$('#alumnosSelect{{ $alumnoKey }}').select2({
                                 tags: true
                             });
@@ -266,6 +277,7 @@
                             </td>
                             <td width="10%"> <input type="checkbox"
                                     wire:model="alumnos.{{ $alumnoKey }}.segundo_apellido"> </td>
+                        @endif
                             <td x-data="{}" x-init="$('#cursosSelect{{ $alumnoKey }}').select2({
                                 tags: true
                             });
@@ -330,6 +342,7 @@
                                         &nbsp;
                                     </td>
                                     <td width="10%"> &nbsp; </td>
+                                    <td width="10%"> &nbsp; </td>
                                     <td x-data="{}" x-init="$('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').select2({
                                         tags: true
                                     });
@@ -383,7 +396,7 @@
                                     </td>
                                     <td width="10%">
                                         <button class="btn text-white btn-danger btn-sm"
-                                            wire:click.prevent="removeInput({{ $i }})">X</button>
+                                            wire:click.prevent="removecurso({{ $alumnoKey }}, {{ $multipleKey }})">X</button>
                                     </td>
                                 </tr>
                             @endforeach

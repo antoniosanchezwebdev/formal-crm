@@ -107,7 +107,11 @@ class PresupuestoController extends Controller
     public function pdf($id, $iva)
     {
 
-        $presupuestosAlumnoCurso = PresupuestosAlumnoCurso::where('presupuesto_id', $id)->get();
+
+        $presupuestoRecibido = Presupuestos::find($id);
+        $esGrupo = $presupuestoRecibido->numero_alumnos > 0; // Verificar si es un grupo
+
+        $presupuestosAlumnosCursos = PresupuestosAlumnoCurso::where('presupuesto_id', $id)->get();
 
         setlocale(LC_TIME, 'Spanish');
         $presupuestoRecibido = Presupuestos::where('id', $id)->first();
@@ -165,6 +169,9 @@ class PresupuestoController extends Controller
         $totalPrecioCurso = [];
         $totalCursos = 0;
 
+        $PrecioTotal= 0;
+
+
         // dd(count($presupuestosAlumnoCurso));
         // Nombre del cliente, si es empresa le da el nombre de la empresa y si es cliente le da el nombre del primer cliente asociado al presupuesto
         if ($presupuestoRecibido->empresa_id > 0 && $presupuestoRecibido->empresa_id != null) {
@@ -185,6 +192,7 @@ class PresupuestoController extends Controller
                 $cifCliente = $empresa->cif;
             }
             if ($empresa->telefono === null) {
+                $telefonoCliente = 'n/a';
             } else {
                 $telefonoCliente = $empresa->telefono;
             }
@@ -194,8 +202,8 @@ class PresupuestoController extends Controller
                 $direccionCliente = $empresa->direccion . ", " . $empresa->cod_postal . ", " . $empresa->localidad;
             }
         } else if ($presupuestoRecibido->empresa_id == 0 || $presupuestoRecibido->empresa_id == null) {
-            if (count($presupuestosAlumnoCurso) > 0) {
-                $alumno = Alumno::where('id', $presupuestosAlumnoCurso[0]->alumno_id)->first();
+            if (count($presupuestosAlumnosCursos) > 0) {
+                $alumno = Alumno::where('id', $presupuestosAlumnosCursos[0]->alumno_id)->first();
                 if ($alumno == null) {
                     $nombreCliente = "Cliente sin nombre definido";
                     $fechaNacCliente = 'n/a';
@@ -240,45 +248,57 @@ class PresupuestoController extends Controller
             // $nombreCliente = $nombreCliente->nombre;
         }
 
-        $numeroAlumnos = 0;
+        $numeroAlumnosTotal = 0;
         $alumnos_existentes = [];
         $cursos_existentes = [];
         $alumno_curso = [];
         // Del presupuesto recibido, se sacan los datos y se añaden a los arrays que serán impresos.
-        foreach ($presupuestosAlumnoCurso as $presup) {
+
+
+        foreach ($presupuestosAlumnosCursos as $presup) {
             $curso = Cursos::find($presup->curso_id);
             $alumno = Alumno::find($presup->alumno_id);
 
+            // Inicializar el arreglo de curso si aún no se ha hecho
             if (!isset($cursos[$curso->id])) {
-                if (CursosDenominacion::find($curso->denominacion_id) == null) {
-                    $cursos[$curso->id] = [
-                        'nombre_curso' => $curso->nombre,
-                        'horas_curso' => $curso->horas,
-                        'precio_curso' => $presup->precio,
-                        'denominacion_curso' => 'Sin denominación',
-                        'alumnos' => []
-                    ];
-                } else {
-                    $cursos[$curso->id] = [
-                        'nombre_curso' => $curso->nombre,
-                        'horas_curso' => $curso->horas,
-                        'precio_curso' => $presup->precio,
-                        'denominacion_curso' => CursosDenominacion::find($curso->denominacion_id)->nombre,
-                        'alumnos' => []
-                    ];
-                }
+                $denominacionCurso = CursosDenominacion::find($curso->denominacion_id);
+                $cursos[$curso->id] = [
+                    'nombre_curso' => $curso->nombre,
+                    'horas_curso' => $curso->horas,
+                    'precio_curso' => $presup->precio,
+                    'denominacion_curso' => $denominacionCurso ? $denominacionCurso->nombre : 'Sin denominación',
+                    'alumnos' => []
+                ];
             }
 
-            $cursos[$curso->id]['alumnos'][] = ['nombre' => $alumno->nombre . " " . $alumno->apellidos, 'dni' => $alumno->dni];
+            // Manejo de grupos de alumnos
+            if ($presupuestoRecibido->numero_alumnos > 0) {
+                for ($i = 0; $i < $presupuestoRecibido->numero_alumnos; $i++) {
+                    $cursos[$curso->id]['alumnos'][] = [
+                        'nombre' => $alumno->nombre . " " . $alumno->apellidos . " (Grupo)",
+                        'dni' => $alumno->dni
+                    ];
+                }
+                $numeroAlumnos += $presupuestoRecibido->numero_alumnos;
+            } else {
+                // Manejo de alumnos individuales
+                $cursos[$curso->id]['alumnos'][] = [
+                    'nombre' => $alumno->nombre . " " . $alumno->apellidos,
+                    'dni' => $alumno->dni
+                ];
+                $numeroAlumnos++;
+            }
 
+            // Registrar alumnos para evitar duplicados
             if (!isset($alumnos_existentes[$alumno->id])) {
                 $alumnos_existentes[$alumno->id] = 1;
-                $numeroAlumnos++;
-            } else {
             }
         }
 
+        foreach ($cursos as $c) {
 
+            $PrecioTotal += $c['precio_curso'] * count($c['alumnos']);
+        }
         // Borra los cursos repetidos
 
 
@@ -299,13 +319,13 @@ class PresupuestoController extends Controller
             'emailCliente',
             'telefonoCliente',
             'nombreMonitorCompleto',
-            'presupuestosAlumnoCurso',
+            'presupuestosAlumnosCursos',
             'numerosTabla',
             'alumnosNombre',
             'descripcionCurso',
             'denominaciones',
             'alumnos',
-            'totalPrecioCurso',
+            'PrecioTotal',
             'iva',
             'rango_fechas',
             'numeroPresupuesto'

@@ -277,14 +277,14 @@
                 <tr>
                     <td class="total" colspan="5">TOTAL (Impuestos incluidos)</td>
                     <td>
-                        {{ number_format(((collect($cursos)->sum('precio_curso') * 0.21) + collect($cursos)->sum('precio_curso')), 2, ",") }}
+                        {{ number_format(($PrecioTotal * 1.21) , 2, ",") }}
                     </td>
                 </tr>
                 @else
                 <tr>
                     <td class="total" colspan="5">TOTAL (Impuestos no incluidos)</td>
                     <td>
-                        {{ number_format(collect($cursos)->sum('precio_curso'), 2, ",") }}
+                        {{ number_format(($PrecioTotal) , 2, ",") }}
                     </td>
                 </tr>
                 @endif

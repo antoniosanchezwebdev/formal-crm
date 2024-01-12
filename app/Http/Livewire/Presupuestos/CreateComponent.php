@@ -18,6 +18,7 @@ class CreateComponent extends Component
 
     use LivewireAlert;
 
+    public $numero_alumnos;
     public $numero_presupuesto;
     public $empresa_id = 0;
     public $fecha_inicio;
@@ -81,6 +82,7 @@ class CreateComponent extends Component
     {
         unset($this->alumnos[$key]);
         $this->alumnos = array_values($this->alumnos);
+        $this->updateTotalPrice();
     }
 
     public function render()
@@ -126,6 +128,8 @@ class CreateComponent extends Component
             'estado' => $this->estado ?? "Pendiente",
             'observaciones' => $this->observaciones ?? "",
             'tiene_rangos_fecha' => $this->tiene_rangos_fecha,
+            'numero_alumnos' => $this->numero_alumnos,
+
 
         ));
         $totalPrecio = 0;
@@ -284,11 +288,23 @@ class CreateComponent extends Component
 
     public function add()
     {
+        if($this->numero_alumnos >= 1){
+            $this->numero_alumnos = 0;
+            $this->alumnos =[];
+        }
+
         $this->alumnos[] = ['alumno' => "", 'dni' => '', 'segundo_apellido' => true, 'curso' => "", 'cursoMultiple' => false, 'precio' => 0, 'horas' => 0];
     }
     public function addCurso($key)
     {
         $this->cursos_multiples[$key][] = ['curso' => "", 'precio' => 0, 'horas' => 0];
+    }
+
+    public function removecurso($alumnoKey, $multipleKey)
+    {
+    unset($this->cursos_multiples[$alumnoKey][$multipleKey]);
+    $this->cursos_multiples[$alumnoKey] = array_values($this->cursos_multiples[$alumnoKey]);
+    $this->updateTotalPrice();
     }
 
     public function addPrecio($i)
@@ -334,15 +350,17 @@ class CreateComponent extends Component
     public function updateTotalPrice()
     {
         $precio = 0;
+        $numeroAlumnos = $this->numero_alumnos > 0 ? $this->numero_alumnos : 1;
+
         if (count($this->alumnos) > 0) {
             foreach ($this->alumnos as $alumnoIndex => $alumno) {
                 if ($alumno['cursoMultiple'] == true) {
-                    $precio += (int) $alumno["precio"];
+                    $precio += (int) $alumno["precio"] * $numeroAlumnos;;
                     foreach ($this->cursos_multiples[$alumnoIndex] as $curso) {
-                        $precio += (int) $curso["precio"];
+                        $precio += (int) $curso["precio"] * $numeroAlumnos;;
                     }
                 } else {
-                    $precio += $alumno["precio"];
+                    $precio += $alumno["precio"] * $numeroAlumnos;;
                 }
             }
         }
@@ -357,5 +375,21 @@ class CreateComponent extends Component
         $precio = $this->precio;
 
         $this->precioConDescuento = $precio - $descuento;
+    }
+
+    public function addUndefinedAlumnosGroup()
+    {
+        $this->numero_alumnos = 1;
+        $this->alumnos =[];
+        $this->alumnos[] = [
+            'alumno' => 'Alumno Sin Definir',
+            'dni' => 'Desconocido',
+            'segundo_apellido' => false,
+            'curso' => "",
+            'cursoMultiple' => false,
+            'precio' => 0,
+            'horas' => 0,
+            'certificado' => false,
+        ];
     }
 }

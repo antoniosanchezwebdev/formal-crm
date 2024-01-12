@@ -183,10 +183,13 @@
     <div class="card mt-5">
         <div class="card-header">
             <div class="row">
-                <h4 class="col-10">Datos de alumnos y asignación de cursos</h4>
+                <h4 class="col-8">Datos de alumnos y asignación de cursos</h4>
                 <div class="col-2">
                     <button type="button" class="btn text-white btn-info w-100" wire:click="add()">Añadir
                         alumno</button>
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn text-white btn-info w-100 ML-1" wire:click="addUndefinedAlumnosGroup()">Alumnos Sin Definir</button>
                 </div>
             </div>
         </div>
@@ -194,14 +197,19 @@
             <table class="table" width="100%">
                 <thead>
                     <tr>
-                        <th width="20%">Alumno</th>
-                        <th width="10%">DNI</th>
-                        <th width="10%">¿Tiene segundo apellido?</th>
-                        <th width="20%">Curso</th>
-                        <th width="10%">¿Atiende más de un curso?</th>
-                        <th width="10%">Precio</th>
-                        <th width="10%">Horas</th>
-                        <th width="10%">Eliminar</th>
+                        @if ($numero_alumnos >= 1)
+                        <th width="10%">Nº alumnos</th>
+                    @else
+                    <th width="20%">Alumno</th>
+                    <th width="10%">DNI</th>
+                    <th width="10%">¿Tiene segundo apellido?</th>
+                    @endif
+                    <th width="20%">Curso</th>
+                    <th width="10%">¿Atiende más de un curso?</th>
+                    <th width="10%">Precio</th>
+                    <th width="10%">Horas</th>
+                    <th width="5%">Certificado</th>
+                    <th width="5%">Eliminar</th>
                     </tr>
                 </thead>
                 @for ($i = count($alumnos) - 1; $i >= 0; $i--)
@@ -210,167 +218,182 @@
                         $alumnoValue = $alumnos[$i];
                     @endphp
                     <tbody>
+                        @if ($numero_alumnos >= 1)
+                        <td>
+                            <input type="number" wire:model="numero_alumnos" class="form-control"></td>
+                    @else
                         <tr>
-                            <td x-data="{}" x-init="$('#alumnosSelect{{ $alumnoKey }}').select2({
-                                tags: true
-                            });
-                            $('#alumnosSelect{{ $alumnoKey }}').on('change', function(e) {
-                                @this.set('alumnos.{{ $alumnoKey }}.alumno', $('#alumnosSelect{{ $alumnoKey }}').val());
-                                @this.addAlumnoSelect($('#alumnosSelect{{ $alumnoKey }}').val());
-                                @this.getDNI({{ $alumnoKey }});
-                            });" width="20%"
-                                wire:key="{{ rand() }}">
-                                <select wire:model="alumnos.{{ $alumnoKey }}.alumno" class="form-control"
-                                    name="observaciones" id="alumnosSelect{{ $alumnoKey }}" wire:ignore.self>
-                                    <option value=""></option>
-                                    <option value="0">-- Nuevo alumno --</option>
-                                    @foreach ($empresaSeleccionar as $emp)
-                                        <optgroup label="{{ $emp->nombre }}">
-                                            @foreach ($alumnosSinEmpresa->where('empresa_id', $emp->id) as $alumn)
-                                                <option value="{{ $alumn->id }}"> {{ $alumn->nombre }}
-                                                    {{ $alumn->apellidos }}
-                                                </option>
-                                            @endforeach
-                                        </optgroup>
-                                    @endforeach
-                                    <optgroup label="Alumnos particulares (sin empresa)">
-                                        @foreach ($alumnosSinEmpresa->where('empresa_id', 0) as $alumn)
+                        <td x-data="{}" x-init="$('#alumnosSelect{{ $alumnoKey }}').select2({
+                            tags: true
+                        });
+                        $('#alumnosSelect{{ $alumnoKey }}').on('change', function(e) {
+                            @this.set('alumnos.{{ $alumnoKey }}.alumno', $('#alumnosSelect{{ $alumnoKey }}').val());
+                            @this.addAlumnoSelect($('#alumnosSelect{{ $alumnoKey }}').val());
+                            @this.getDNI({{ $alumnoKey }});
+                        });" width="20%"
+                            wire:key="{{ rand() }}">
+                            <select wire:model="alumnos.{{ $alumnoKey }}.alumno" class="form-control"
+                                name="observaciones" id="alumnosSelect{{ $alumnoKey }}" wire:ignore.self>
+                                <option value=""></option>
+                                <option value="0">-- Nuevo alumno --</option>
+                                @foreach ($empresaSeleccionar as $emp)
+                                    <optgroup label="{{ $emp->nombre }}">
+                                        @foreach ($alumnosSinEmpresa->where('empresa_id', $emp->id) as $alumn)
                                             <option value="{{ $alumn->id }}"> {{ $alumn->nombre }}
                                                 {{ $alumn->apellidos }}
                                             </option>
                                         @endforeach
-                                        @foreach ($alumnos_select as $alumno_select)
-                                            <option value="{{ $alumno_select }}">{{ $alumno_select }}</option>
-                                        @endforeach
                                     </optgroup>
-                                </select>
-                                {{-- <input type="text" class="form-control" placeholder="Nombre" wire:model="nameProducto.0"> --}}
-                                @error('nameProducto.0')
-                                    <span class="text-danger error">{{ $message }}</span>
-                                @enderror
-                            </td>
-                            <td width="10%"><input type="text" class="form-control"
-                                    wire:model="alumnos.{{ $alumnoKey }}.dni" placeholder="DNI">
-                                @error('precio.0')
-                                    <span class="text-danger error">{{ $message }}</span>
-                                @enderror
-                            </td>
-                            <td width="10%"> <input type="checkbox"
-                                    wire:model="alumnos.{{ $alumnoKey }}.segundo_apellido"> </td>
-                            <td x-data="{}" x-init="$('#cursosSelect{{ $alumnoKey }}').select2({
-                                tags: true
-                            });
-                            $('#cursosSelect{{ $alumnoKey }}').on('change', function(e) {
-                                @this.set('alumnos.{{ $alumnoKey }}.curso', $('#cursosSelect{{ $alumnoKey }}').val());
-                                @this.addCursoSelect($('#cursosSelect{{ $alumnoKey }}').val());
-                                @this.addPrecio({{ $alumnoKey }});
-                            });" width="20%"
-                                wire:key="{{ rand() }}">
-                                <select name="producto" id="cursosSelect{{ $alumnoKey }}"
-                                    wire:model="alumnos.{{ $alumnoKey }}.curso" class="form-control">
-                                    <option value="">-- Elige un curso --</option>
-                                    <option value="0">-- Nuevo curso --</option>
-                                    @foreach ($cursos as $curso)
-                                        <option value="{{ $curso->id }}">{{ $curso->nombre }}</option>
+                                @endforeach
+                                <optgroup label="Alumnos particulares (sin empresa)">
+                                    @foreach ($alumnosSinEmpresa->where('empresa_id', 0) as $alumn)
+                                        <option value="{{ $alumn->id }}"> {{ $alumn->nombre }}
+                                            {{ $alumn->apellidos }}
+                                        </option>
                                     @endforeach
-                                    @foreach ($cursos_select as $curso_select)
-                                        <option value="{{ $curso_select }}">{{ $curso_select }}</option>
+                                    @foreach ($alumnos_select as $alumno_select)
+                                        <option value="{{ $alumno_select }}">{{ $alumno_select }}</option>
                                     @endforeach
-                                </select>
-                                {{-- <input type="text" class="form-control" placeholder="Nombre" wire:model="nameProducto.0"> --}}
-                                @error('nameProducto.0')
-                                    <span class="text-danger error">{{ $message }}</span>
-                                @enderror
-                            </td>
-                            <td width="10%"> <input type="checkbox"
-                                    wire:model="alumnos.{{ $alumnoKey }}.cursoMultiple">
-                                @if ($alumnoValue['cursoMultiple'] == true)
-                                    <button class="btn btn-primary btn-sm"
-                                        wire:click.prevent="addCurso({{ $alumnoKey }})">+</button>
-                                @endif
-                            </td>
-                            <td width="10%">
-                                <input type="number" step="any" class="form-control"
-                                    wire:change="updateTotalPrice" wire:model="alumnos.{{ $alumnoKey }}.precio"
-                                    placeholder="Precio Total">
-                                @error('precio.0')
-                                    <span class="text-danger error">{{ $message }}</span>
-                                @enderror
-                            </td>
-                            <td width="10%">
-                                <input type="number" step="any" class="form-control"
-                                    wire:change="updateTotalPrice" wire:model="alumnos.{{ $alumnoKey }}.horas"
-                                    placeholder="Precio Total">
-                                @error('precio.0')
-                                    <span class="text-danger error">{{ $message }}</span>
-                                @enderror
-                            </td>
-                            <td width="10%">
-                                <button class="btn text-white btn-danger btn-sm"
-                                    wire:click.prevent="removeInput({{ $i }})">X</button>
-                            </td>
-                        </tr>
-                        @if ($alumnoValue['cursoMultiple'] == true && isset($cursos_multiples[$alumnoKey][0]))
-                            @foreach ($cursos_multiples[$alumnoKey] as $multipleKey => $curso_multiple)
-                                <tr>
-                                    <td width="30%">
-                                        &nbsp;
-                                    </td>
-                                    <td width="10%"> &nbsp; </td>
-                                    <td x-data="{}" x-init="$('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').select2({
-                                        tags: true
-                                    });
-                                    $('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').on('change', function(e) {
-                                        @this.set('cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.curso', $('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').val());
-                                        @this.addCursoSelect($('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').val());
-                                        @this.addPrecioMultiple({{ $alumnoKey }}, {{ $multipleKey }});
-                                    });" width="20%"
-                                        wire:key="{{ rand() }}">
-                                        <select name="producto"
-                                            id="cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}"
-                                            wire:model="cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.curso"
-                                            class="form-control">
-                                            <option value="">-- Elige un curso --</option>
-                                            <option value="0">-- Nuevo curso --</option>
-                                            @foreach ($cursos as $curso)
-                                                <option value="{{ $curso->id }}">{{ $curso->nombre }}</option>
-                                            @endforeach
-                                            @foreach ($cursos_select as $curso_select)
-                                                <option value="{{ $curso_select }}">{{ $curso_select }}</option>
-                                            @endforeach
-                                        </select>
-                                        {{-- <input type="text" class="form-control" placeholder="Nombre" wire:model="nameProducto.0"> --}}
-                                        @error('nameProducto.0')
-                                            <span class="text-danger error">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                    <td width="10%"> &nbsp; </td>
-                                    <td width="10%">
-                                        <input type="number" step="any" class="form-control"
-                                            wire:change="updateTotalPrice"
-                                            wire:model="cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.precio"
-                                            placeholder="Precio Total">
-                                        @error('precio.0')
-                                            <span class="text-danger error">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                    <td width="10%">
-                                        <input type="number" step="any" class="form-control"
-                                            wire:change="updateTotalPrice"
-                                            wire:model="cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.horas"
-                                            placeholder="Precio Total">
-                                        @error('precio.0')
-                                            <span class="text-danger error">{{ $message }}</span>
-                                        @enderror
-                                    </td>
-                                    <td width="20%">
-                                        <button class="btn text-white btn-danger btn-sm"
-                                            wire:click.prevent="removeInput({{ $i }})">X</button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endif
-                @endfor
+                                </optgroup>
+                            </select>
+                            {{-- <input type="text" class="form-control" placeholder="Nombre" wire:model="nameProducto.0"> --}}
+                            @error('nameProducto.0')
+                                <span class="text-danger error">{{ $message }}</span>
+                            @enderror
+                        </td>
+                        <td width="10%"><input type="text" class="form-control"
+                                wire:model="alumnos.{{ $alumnoKey }}.dni" placeholder="DNI">
+                            @error('precio.0')
+                                <span class="text-danger error">{{ $message }}</span>
+                            @enderror
+                        </td>
+                        <td width="10%"> <input type="checkbox"
+                                wire:model="alumnos.{{ $alumnoKey }}.segundo_apellido"> </td>
+                    @endif
+                        <td x-data="{}" x-init="$('#cursosSelect{{ $alumnoKey }}').select2({
+                            tags: true
+                        });
+                        $('#cursosSelect{{ $alumnoKey }}').on('change', function(e) {
+                            @this.set('alumnos.{{ $alumnoKey }}.curso', $('#cursosSelect{{ $alumnoKey }}').val());
+                            @this.addCursoSelect($('#cursosSelect{{ $alumnoKey }}').val());
+                            @this.addPrecio({{ $alumnoKey }});
+                        });" width="20%"
+                            wire:key="{{ rand() }}">
+                            <select name="producto" id="cursosSelect{{ $alumnoKey }}"
+                                wire:model="alumnos.{{ $alumnoKey }}.curso" class="form-control">
+                                <option value="">-- Elige un curso --</option>
+                                <option value="0">-- Nuevo curso --</option>
+                                @foreach ($cursos as $curso)
+                                    <option value="{{ $curso->id }}">{{ $curso->nombre }}</option>
+                                @endforeach
+                                @foreach ($cursos_select as $curso_select)
+                                    <option value="{{ $curso_select }}">{{ $curso_select }}</option>
+                                @endforeach
+                            </select>
+                            {{-- <input type="text" class="form-control" placeholder="Nombre" wire:model="nameProducto.0"> --}}
+                            @error('nameProducto.0')
+                                <span class="text-danger error">{{ $message }}</span>
+                            @enderror
+                        </td>
+                        <td width="10%"> <input type="checkbox"
+                                wire:model="alumnos.{{ $alumnoKey }}.cursoMultiple">
+                            @if ($alumnoValue['cursoMultiple'] == true)
+                                <button class="btn btn-primary btn-sm"
+                                    wire:click.prevent="addCurso({{ $alumnoKey }})">+</button>
+                            @endif
+                        </td>
+                        <td width="10%">
+                            <input type="number" step="any" class="form-control"
+                                wire:change="updateTotalPrice" wire:model="alumnos.{{ $alumnoKey }}.precio"
+                                placeholder="Precio Total">
+                            @error('precio.0')
+                                <span class="text-danger error">{{ $message }}</span>
+                            @enderror
+                        </td>
+                        <td width="10%">
+                            <input type="number" step="any" class="form-control"
+                                wire:change="updateTotalPrice" wire:model="alumnos.{{ $alumnoKey }}.horas"
+                                placeholder="Precio Total">
+                            @error('precio.0')
+                                <span class="text-danger error">{{ $message }}</span>
+                            @enderror
+                        </td>
+                        <td width="5%">
+                            <button class="btn text-white btn-info btn-sm"
+                                wire:click.prevent="verCertificado({{ $alumnoKey }})">Ver certificado</button>
+                        </td>
+                        <td width="5%">
+                            <button class="btn text-white btn-danger btn-sm"
+                                wire:click.prevent="removeInput({{ $i }})">X</button>
+                        </td>
+                    </tr>
+                    @if ($alumnoValue['cursoMultiple'] == true && isset($cursos_multiples[$alumnoKey][0]))
+                        @foreach ($cursos_multiples[$alumnoKey] as $multipleKey => $curso_multiple)
+                            <tr>
+                                <td width="30%">
+                                    &nbsp;
+                                </td>
+                                <td width="10%"> &nbsp; </td>
+                                <td width="10%"> &nbsp; </td>
+                                <td x-data="{}" x-init="$('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').select2({
+                                    tags: true
+                                });
+                                $('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').on('change', function(e) {
+                                    @this.set('cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.curso', $('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').val());
+                                    @this.addCursoSelect($('#cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}').val());
+                                    @this.addPrecioMultiple({{ $alumnoKey }}, {{ $multipleKey }});
+                                });" width="20%"
+                                    wire:key="{{ rand() }}">
+                                    <select name="producto"
+                                        id="cursosSelect{{ $multipleKey }}-{{ $alumnoKey }}"
+                                        wire:model="cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.curso"
+                                        class="form-control">
+                                        <option value="">-- Elige un curso --</option>
+                                        <option value="0">-- Nuevo curso --</option>
+                                        @foreach ($cursos as $curso)
+                                            <option value="{{ $curso->id }}">{{ $curso->nombre }}</option>
+                                        @endforeach
+                                        @foreach ($cursos_select as $curso_select)
+                                            <option value="{{ $curso_select }}">{{ $curso_select }}</option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" placeholder="Nombre" wire:model="nameProducto.0"> --}}
+                                    @error('nameProducto.0')
+                                        <span class="text-danger error">{{ $message }}</span>
+                                    @enderror
+                                </td>
+                                <td width="10%"> &nbsp; </td>
+                                <td width="10%">
+                                    <input type="number" step="any" class="form-control"
+                                        wire:change="updateTotalPrice"
+                                        wire:model="cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.precio"
+                                        placeholder="Precio Total">
+                                    @error('precio.0')
+                                        <span class="text-danger error">{{ $message }}</span>
+                                    @enderror
+                                </td>
+                                <td width="10%">
+                                    <input type="number" step="any" class="form-control"
+                                        wire:change="updateTotalPrice"
+                                        wire:model="cursos_multiples.{{ $alumnoKey }}.{{ $multipleKey }}.horas"
+                                        placeholder="Precio Total">
+                                    @error('precio.0')
+                                        <span class="text-danger error">{{ $message }}</span>
+                                    @enderror
+                                </td>
+                                <td width="10%">
+                                    <button class="btn text-white btn-info btn-sm"
+                                        wire:click.prevent="verCertificadoMultiple({{ $alumnoKey }}, {{ $multipleKey }})">Ver
+                                        certificado</button>
+                                </td>
+                                <td width="10%">
+                                    <button class="btn text-white btn-danger btn-sm"
+                                        wire:click.prevent="removecurso({{ $alumnoKey }}, {{ $multipleKey }})">X</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
+            @endfor
                 </tbody>
             </table>
             <br>
